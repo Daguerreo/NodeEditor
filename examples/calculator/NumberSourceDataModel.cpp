@@ -6,18 +6,12 @@
 #include <QtGui/QDoubleValidator>
 #include <QtWidgets/QLineEdit>
 
-
-NumberSourceDataModel::
-NumberSourceDataModel()
-  : _lineEdit{nullptr}
-  , _number(std::make_shared<DecimalData>(0.0))
+NumberSourceDataModel::NumberSourceDataModel()
+  : _lineEdit{nullptr}, _number(std::make_shared<DecimalData>(0.0))
 {
 }
 
-
-QJsonObject
-NumberSourceDataModel::
-save() const
+QJsonObject NumberSourceDataModel::save() const
 {
   QJsonObject modelJson = NodeDelegateModel::save();
 
@@ -26,10 +20,7 @@ save() const
   return modelJson;
 }
 
-
-void
-NumberSourceDataModel::
-load(QJsonObject const& p)
+void NumberSourceDataModel::load(QJsonObject const& p)
 {
   QJsonValue v = p["number"];
 
@@ -49,33 +40,27 @@ load(QJsonObject const& p)
   }
 }
 
-
-unsigned int
-NumberSourceDataModel::
-nPorts(PortType portType) const
+unsigned int NumberSourceDataModel::nPorts(PortType portType) const
 {
   unsigned int result = 1;
 
   switch (portType)
   {
-    case PortType::In:
+    case PortType::In :
       result = 0;
       break;
 
-    case PortType::Out:
+    case PortType::Out :
       result = 1;
 
-    default:
+    default :
       break;
   }
 
   return result;
 }
 
-
-void
-NumberSourceDataModel::
-onTextEdited(QString const& str)
+void NumberSourceDataModel::onTextEdited(QString const& str)
 {
   bool ok = false;
 
@@ -86,7 +71,6 @@ onTextEdited(QString const& str)
     _number = std::make_shared<DecimalData>(number);
 
     Q_EMIT dataUpdated(0);
-
   }
   else
   {
@@ -94,26 +78,14 @@ onTextEdited(QString const& str)
   }
 }
 
-
-NodeDataType
-NumberSourceDataModel::
-dataType(PortType, PortIndex) const
+NodeDataType NumberSourceDataModel::dataType(PortType, PortIndex) const
 {
   return DecimalData().type();
 }
 
+std::shared_ptr<NodeData> NumberSourceDataModel::outData(PortIndex) { return _number; }
 
-std::shared_ptr<NodeData>
-NumberSourceDataModel::
-outData(PortIndex)
-{
-  return _number;
-}
-
-
-QWidget *
-NumberSourceDataModel::
-embeddedWidget()
+QWidget* NumberSourceDataModel::embeddedWidget()
 {
   if (!_lineEdit)
   {
@@ -122,8 +94,7 @@ embeddedWidget()
     _lineEdit->setValidator(new QDoubleValidator());
     _lineEdit->setMaximumSize(_lineEdit->sizeHint());
 
-    connect(_lineEdit, &QLineEdit::textChanged,
-            this, &NumberSourceDataModel::onTextEdited);
+    connect(_lineEdit, &QLineEdit::textChanged, this, &NumberSourceDataModel::onTextEdited);
 
     _lineEdit->setText(QString::number(_number->number()));
   }
@@ -131,15 +102,12 @@ embeddedWidget()
   return _lineEdit;
 }
 
-
-void 
-NumberSourceDataModel::
-setNumber(double n)
+void NumberSourceDataModel::setNumber(double n)
 {
   _number = std::make_shared<DecimalData>(n);
 
   Q_EMIT dataUpdated(0);
 
-  if(_lineEdit)
+  if (_lineEdit)
     _lineEdit->setText(QString::number(_number->number()));
 }

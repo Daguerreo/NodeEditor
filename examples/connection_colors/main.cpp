@@ -3,20 +3,19 @@
 #include <QtNodes/ConnectionStyle>
 #include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/DataFlowGraphicsScene>
-#include <QtNodes/NodeDelegateModelRegistry>
 #include <QtNodes/GraphicsView>
 #include <QtNodes/NodeData>
+#include <QtNodes/NodeDelegateModelRegistry>
 
 #include "models.hpp"
 
-using QtNodes::NodeDelegateModelRegistry;
-using QtNodes::DataFlowGraphModel;
-using QtNodes::DataFlowGraphicsScene;
-using QtNodes::GraphicsView;
 using QtNodes::ConnectionStyle;
+using QtNodes::DataFlowGraphicsScene;
+using QtNodes::DataFlowGraphModel;
+using QtNodes::GraphicsView;
+using QtNodes::NodeDelegateModelRegistry;
 
-static std::shared_ptr<NodeDelegateModelRegistry>
-registerDataModels()
+static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
   auto ret = std::make_shared<NodeDelegateModelRegistry>();
 
@@ -34,10 +33,7 @@ registerDataModels()
   return ret;
 }
 
-
-static
-void
-setStyle()
+static void setStyle()
 {
   ConnectionStyle::setConnectionStyle(
     R"(
@@ -49,11 +45,9 @@ setStyle()
   )");
 }
 
-
 //------------------------------------------------------------------------------
 
-int
-main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
 
@@ -72,4 +66,3 @@ main(int argc, char* argv[])
 
   return app.exec();
 }
-

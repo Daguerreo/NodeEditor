@@ -25,31 +25,20 @@
 #include <stdexcept>
 #include <utility>
 
-
 namespace QtNodes
 {
 
-
-DataFlowGraphicsScene::
-DataFlowGraphicsScene(DataFlowGraphModel& graphModel,
-                      QObject*            parent)
-  : BasicGraphicsScene(graphModel, parent)
-  , _graphModel(graphModel)
+DataFlowGraphicsScene::DataFlowGraphicsScene(DataFlowGraphModel& graphModel, QObject* parent)
+  : BasicGraphicsScene(graphModel, parent), _graphModel(graphModel)
 {
-  connect(&_graphModel, &DataFlowGraphModel::inPortDataWasSet,
-          [this](NodeId const nodeId, PortType const, PortIndex const)
-          {
-            onNodeUpdated(nodeId);
-          });
+  connect(&_graphModel,
+          &DataFlowGraphModel::inPortDataWasSet,
+          [this](NodeId const nodeId, PortType const, PortIndex const) { onNodeUpdated(nodeId); });
 }
-
 
 // TODO constructor for an empyt scene?
 
-
-std::vector<NodeId>
-DataFlowGraphicsScene::
-selectedNodes() const
+std::vector<NodeId> DataFlowGraphicsScene::selectedNodes() const
 {
   QList<QGraphicsItem*> graphicsItems = selectedItems();
 
@@ -69,10 +58,7 @@ selectedNodes() const
   return result;
 }
 
-
-QMenu*
-DataFlowGraphicsScene::
-createSceneMenu(QPointF const scenePos)
+QMenu* DataFlowGraphicsScene::createSceneMenu(QPointF const scenePos)
 {
   QMenu* modelMenu = new QMenu();
 
@@ -108,8 +94,7 @@ createSceneMenu(QPointF const scenePos)
 
   for (auto const& assoc : registry->registeredModelsCategoryAssociation())
   {
-    QList<QTreeWidgetItem*> parent = treeView->findItems(assoc.second, 
-                                                         Qt::MatchExactly);
+    QList<QTreeWidgetItem*> parent = treeView->findItems(assoc.second, Qt::MatchExactly);
 
     if (parent.count() <= 0)
       continue;
@@ -120,12 +105,11 @@ createSceneMenu(QPointF const scenePos)
 
   treeView->expandAll();
 
-  connect(treeView, &QTreeWidget::itemClicked,
-          [this,
-           modelMenu,
-           scenePos](QTreeWidgetItem* item, int)
+  connect(treeView,
+          &QTreeWidget::itemClicked,
+          [this, modelMenu, scenePos](QTreeWidgetItem* item, int)
           {
-            if(!(item->flags() & (Qt::ItemIsSelectable)))
+            if (!(item->flags() & (Qt::ItemIsSelectable)))
             {
               return;
             }
@@ -134,16 +118,15 @@ createSceneMenu(QPointF const scenePos)
 
             if (nodeId != InvalidNodeId)
             {
-              _graphModel.setNodeData(nodeId,
-                                      NodeRole::Position,
-                                      scenePos);
+              _graphModel.setNodeData(nodeId, NodeRole::Position, scenePos);
             }
 
             modelMenu->close();
           });
 
-  //Setup filtering
-  connect(txtBox, &QLineEdit::textChanged,
+  // Setup filtering
+  connect(txtBox,
+          &QLineEdit::textChanged,
           [treeView](const QString& text)
           {
             QTreeWidgetItemIterator it(treeView, QTreeWidgetItemIterator::NoChildren);
@@ -166,16 +149,12 @@ createSceneMenu(QPointF const scenePos)
   return modelMenu;
 }
 
-
-void
-DataFlowGraphicsScene::
-save() const
+void DataFlowGraphicsScene::save() const
 {
-  QString fileName =
-    QFileDialog::getSaveFileName(nullptr,
-                                 tr("Open Flow Scene"),
-                                 QDir::homePath(),
-                                 tr("Flow Scene Files (*.flow)"));
+  QString fileName = QFileDialog::getSaveFileName(nullptr,
+                                                  tr("Open Flow Scene"),
+                                                  QDir::homePath(),
+                                                  tr("Flow Scene Files (*.flow)"));
 
   if (!fileName.isEmpty())
   {
@@ -190,16 +169,12 @@ save() const
   }
 }
 
-
-void
-DataFlowGraphicsScene::
-load()
+void DataFlowGraphicsScene::load()
 {
-  QString fileName =
-    QFileDialog::getOpenFileName(nullptr,
-                                 tr("Open Flow Scene"),
-                                 QDir::homePath(),
-                                 tr("Flow Scene Files (*.flow)"));
+  QString fileName = QFileDialog::getOpenFileName(nullptr,
+                                                  tr("Open Flow Scene"),
+                                                  QDir::homePath(),
+                                                  tr("Flow Scene Files (*.flow)"));
 
   if (!QFileInfo::exists(fileName))
     return;
@@ -218,5 +193,4 @@ load()
   Q_EMIT sceneLoaded();
 }
 
-
-}
+} // namespace QtNodes

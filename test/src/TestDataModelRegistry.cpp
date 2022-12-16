@@ -16,13 +16,9 @@ namespace
 class StubModelStaticName : public StubNodeDataModel
 {
 public:
-  static QString
-  Name()
-  {
-    return "Name";
-  }
+  static QString Name() { return "Name"; }
 };
-}
+} // namespace
 
 TEST_CASE("DataModelRegistry::registerModel", "[interface]")
 {
@@ -46,9 +42,7 @@ TEST_CASE("DataModelRegistry::registerModel", "[interface]")
   {
     SECTION("non-static name()")
     {
-      registry.registerModel([] {
-        return std::make_unique<StubNodeDataModel>();
-      });
+      registry.registerModel([] { return std::make_unique<StubNodeDataModel>(); });
 
       auto model = registry.create("name");
 
@@ -58,9 +52,7 @@ TEST_CASE("DataModelRegistry::registerModel", "[interface]")
     }
     SECTION("static Name()")
     {
-      registry.registerModel([] {
-        return std::make_unique<StubModelStaticName>();
-      });
+      registry.registerModel([] { return std::make_unique<StubModelStaticName>(); });
 
       auto model = registry.create("Name");
 

@@ -1,10 +1,10 @@
 #pragma once
 
+#include "AbstractGraphModel.hpp"
 #include "ConnectionIdUtils.hpp"
 #include "NodeDelegateModelRegistry.hpp"
-#include "AbstractGraphModel.hpp"
-#include "StyleCollection.hpp"
 #include "Serializable.hpp"
+#include "StyleCollection.hpp"
 
 #include "Export.hpp"
 
@@ -31,86 +31,62 @@ public:
 public:
   DataFlowGraphModel(std::shared_ptr<NodeDelegateModelRegistry> registry);
 
-  std::shared_ptr<NodeDelegateModelRegistry>
-  dataModelRegistry() { return _registry; }
+  std::shared_ptr<NodeDelegateModelRegistry> dataModelRegistry() { return _registry; }
 
 public:
-  std::unordered_set<NodeId>
-  allNodeIds() const override;
+  std::unordered_set<NodeId> allNodeIds() const override;
 
-  std::unordered_set<ConnectionId>
-  allConnectionIds(NodeId const nodeId) const override;
+  std::unordered_set<ConnectionId> allConnectionIds(NodeId const nodeId) const override;
 
-  std::unordered_set<ConnectionId>
-  connections(NodeId    nodeId,
-              PortType  portType,
-              PortIndex portIndex) const override;
+  std::unordered_set<ConnectionId> connections(NodeId nodeId,
+                                               PortType portType,
+                                               PortIndex portIndex) const override;
 
-  bool
-  connectionExists(ConnectionId const connectionId) const override;
+  bool connectionExists(ConnectionId const connectionId) const override;
 
-  NodeId
-  addNode(QString const nodeType) override;
+  NodeId addNode(QString const nodeType) override;
 
-  bool
-  connectionPossible(ConnectionId const connectionId) const override;
+  bool connectionPossible(ConnectionId const connectionId) const override;
 
-  void
-  addConnection(ConnectionId const connectionId) override;
+  void addConnection(ConnectionId const connectionId) override;
 
-  bool
-  nodeExists(NodeId const nodeId) const override;
+  bool nodeExists(NodeId const nodeId) const override;
 
-  QVariant
-  nodeData(NodeId nodeId, NodeRole role) const override;
+  QVariant nodeData(NodeId nodeId, NodeRole role) const override;
 
+  NodeFlags nodeFlags(NodeId nodeId) const override;
 
-  NodeFlags
-  nodeFlags(NodeId nodeId) const override;
+  bool setNodeData(NodeId nodeId, NodeRole role, QVariant value) override;
 
-  bool
-  setNodeData(NodeId   nodeId,
-              NodeRole role,
-              QVariant value) override;
+  QVariant portData(NodeId nodeId,
+                    PortType portType,
+                    PortIndex portIndex,
+                    PortRole role) const override;
 
-  QVariant
-  portData(NodeId    nodeId,
-           PortType  portType,
-           PortIndex portIndex,
-           PortRole  role) const override;
+  bool setPortData(NodeId nodeId,
+                   PortType portType,
+                   PortIndex portIndex,
+                   QVariant const& value,
+                   PortRole role = PortRole::Data) override;
 
-  bool
-  setPortData(NodeId          nodeId,
-              PortType        portType,
-              PortIndex       portIndex,
-              QVariant const& value,
-              PortRole        role = PortRole::Data) override;
+  bool deleteConnection(ConnectionId const connectionId) override;
 
-  bool
-  deleteConnection(ConnectionId const connectionId) override;
+  bool deleteNode(NodeId const nodeId) override;
 
-  bool
-  deleteNode(NodeId const nodeId) override;
+  QJsonObject saveNode(NodeId const) const override;
 
-  QJsonObject
-  saveNode(NodeId const) const override;
+  QJsonObject save() const override;
 
-  QJsonObject
-  save() const override;
+  void loadNode(QJsonObject const& nodeJson) override;
 
-  void
-  loadNode(QJsonObject const & nodeJson) override;
-
-  void
-  load(QJsonObject const &json) override;
+  void load(QJsonObject const& json) override;
 
   /**
    * Fetches the NodeDelegateModel for the given `nodeId` and tries to cast the
    * stored pointer to the given type
    */
   template<typename NodeDelegateModelType>
-  NodeDelegateModelType*
-  delegateModel(NodeId const nodeId)
+  NodeDelegateModelType* delegateModel(NodeId const nodeId)
   {
     auto it = _models.find(nodeId);
     if (it == _models.end())
@@ -122,10 +98,7 @@ public:
   }
 
 Q_SIGNALS:
-  void
-  inPortDataWasSet(NodeId const,
-                   PortType const,
-                   PortIndex const);
+  void inPortDataWasSet(NodeId const, PortType const, PortIndex const);
 
 private:
   NodeId newNodeId() override { return _nextNodeId++; }
@@ -141,30 +114,21 @@ private Q_SLOTS:
    * - When a node restored from JSON an needs to send data downstream.
    *   @see DataFlowGraphModel::loadNode
    */
-  void
-  onOutPortDataUpdated(NodeId const    nodeId,
-                       PortIndex const portIndex);
-
+  void onOutPortDataUpdated(NodeId const nodeId, PortIndex const portIndex);
 
   /// Function is called after detaching a connection.
-  void
-  propagateEmptyDataTo(NodeId const    nodeId,
-                       PortIndex const portIndex);
+  void propagateEmptyDataTo(NodeId const nodeId, PortIndex const portIndex);
 
 private:
   std::shared_ptr<NodeDelegateModelRegistry> _registry;
 
   NodeId _nextNodeId;
 
-  std::unordered_map<NodeId,
-                     std::unique_ptr<NodeDelegateModel>>
-  _models;
+  std::unordered_map<NodeId, std::unique_ptr<NodeDelegateModel>> _models;
 
   std::unordered_set<ConnectionId> _connectivity;
 
-  mutable std::unordered_map<NodeId, NodeGeometryData>
-  _nodeGeometryData;
+  mutable std::unordered_map<NodeId, NodeGeometryData> _nodeGeometryData;
 };
 
-
-}
+} // namespace QtNodes

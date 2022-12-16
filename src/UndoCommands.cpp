@@ -11,21 +11,18 @@
 
 #include <typeinfo>
 
-
 namespace QtNodes
 {
 
-DeleteCommand::
-DeleteCommand(BasicGraphicsScene* scene)
-  : _scene(scene)
+DeleteCommand::DeleteCommand(BasicGraphicsScene* scene) : _scene(scene)
 {
-  auto & graphModel = _scene->graphModel();
+  auto& graphModel = _scene->graphModel();
 
   QJsonArray connJsonArray;
   // Delete the selected connections first, ensuring that they won't be
   // automatically deleted when selected nodes are deleted (deleting a
   // node deletes some connections as well)
-  for (QGraphicsItem * item : _scene->selectedItems())
+  for (QGraphicsItem* item : _scene->selectedItems())
   {
     if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
     {
@@ -38,12 +35,12 @@ DeleteCommand(BasicGraphicsScene* scene)
   QJsonArray nodesJsonArray;
   // Delete the nodes; this will delete many of the connections.
   // Selected connections were already deleted prior to this loop,
-  for (QGraphicsItem * item : _scene->selectedItems())
+  for (QGraphicsItem* item : _scene->selectedItems())
   {
     if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
     {
       // saving connections attached to the selected nodes
-      for (auto const & cid : graphModel.allConnectionIds(n->nodeId()))
+      for (auto const& cid : graphModel.allConnectionIds(n->nodeId()))
       {
         connJsonArray.append(toJson(cid));
       }
@@ -56,12 +53,9 @@ DeleteCommand(BasicGraphicsScene* scene)
   _sceneJson["connections"] = connJsonArray;
 }
 
-
-void
-DeleteCommand::
-undo()
+void DeleteCommand::undo()
 {
-  auto & graphModel = _scene->graphModel();
+  auto& graphModel = _scene->graphModel();
 
   QJsonArray nodesJsonArray = _sceneJson["nodes"].toArray();
 
@@ -84,12 +78,9 @@ undo()
   }
 }
 
-
-void
-DeleteCommand::
-redo()
+void DeleteCommand::redo()
 {
-  auto & graphModel = _scene->graphModel();
+  auto& graphModel = _scene->graphModel();
 
   QJsonArray connectionJsonArray = _sceneJson["connections"].toArray();
 
@@ -102,7 +93,6 @@ redo()
     graphModel.deleteConnection(connId);
   }
 
-
   QJsonArray nodesJsonArray = _sceneJson["nodes"].toArray();
 
   for (QJsonValueRef node : nodesJsonArray)
@@ -112,24 +102,19 @@ redo()
   }
 }
 
-
 //-------------------------------------
 
-
-DuplicateCommand::
-DuplicateCommand(BasicGraphicsScene* scene,
-                 QPointF const & mouseScenePos)
-  : _scene(scene)
-  , _mouseScenePos(mouseScenePos)
+DuplicateCommand::DuplicateCommand(BasicGraphicsScene* scene, QPointF const& mouseScenePos)
+  : _scene(scene), _mouseScenePos(mouseScenePos)
 {
-  auto & graphModel = _scene->graphModel();
+  auto& graphModel = _scene->graphModel();
 
   std::unordered_set<NodeId> selectedNodes;
 
   QJsonArray nodesJsonArray;
   // Delete the nodes; this will delete many of the connections.
   // Selected connections were already deleted prior to this loop,
-  for (QGraphicsItem * item : _scene->selectedItems())
+  for (QGraphicsItem* item : _scene->selectedItems())
   {
     if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
     {
@@ -143,31 +128,26 @@ DuplicateCommand(BasicGraphicsScene* scene,
   // Delete the selected connections first, ensuring that they won't be
   // automatically deleted when selected nodes are deleted (deleting a
   // node deletes some connections as well)
-  for (QGraphicsItem * item : _scene->selectedItems())
+  for (QGraphicsItem* item : _scene->selectedItems())
   {
     if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
     {
       auto const& cid = c->connectionId();
 
-      if (selectedNodes.count(cid.outNodeId) > 0 &&
-          selectedNodes.count(cid.inNodeId) > 0)
+      if (selectedNodes.count(cid.outNodeId) > 0 && selectedNodes.count(cid.inNodeId) > 0)
       {
         connJsonArray.append(toJson(cid));
       }
     }
   }
 
-
   _sceneJson["nodes"] = nodesJsonArray;
   _sceneJson["connections"] = connJsonArray;
 }
 
-
-void
-DuplicateCommand::
-undo()
+void DuplicateCommand::undo()
 {
-  auto & graphModel = _scene->graphModel();
+  auto& graphModel = _scene->graphModel();
 
   QJsonArray connectionJsonArray = _newSceneJson["connections"].toArray();
 
@@ -189,14 +169,11 @@ undo()
   }
 }
 
-
-void
-DuplicateCommand::
-redo()
+void DuplicateCommand::redo()
 {
   _scene->clearSelection();
 
-  auto & graphModel = _scene->graphModel();
+  auto& graphModel = _scene->graphModel();
 
   std::unordered_map<NodeId, NodeId> mapNodeIds;
 
@@ -214,9 +191,8 @@ redo()
 
     NodeId oldNodeId = nodeJson["id"].toInt();
 
-    averagePos +=
-      QPointF(nodeJson["position"].toObject()["x"].toDouble(),
-              nodeJson["position"].toObject()["y"].toDouble());
+    averagePos += QPointF(nodeJson["position"].toObject()["x"].toDouble(),
+                          nodeJson["position"].toObject()["y"].toDouble());
 
     NodeId newNodeId = graphModel.newNodeId();
 
@@ -229,7 +205,6 @@ redo()
   }
 
   averagePos /= static_cast<double>(nodesJsonArray.size());
-
 
   // The cycle below replaces old NodeIds in connections with the new values
 
@@ -246,7 +221,6 @@ redo()
                            connId.outPortIndex,
                            mapNodeIds[connId.inNodeId],
                            connId.inPortIndex};
-
 
     newConnJsonArray.append(toJson(newConnId));
   }
@@ -269,7 +243,6 @@ redo()
     posJson["y"] = oldPos.y();
     obj["position"] = posJson;
 
-
     graphModel.loadNode(obj);
 
     _scene->nodeGraphicsObject(id)->setZValue(1.0);
@@ -285,121 +258,62 @@ redo()
     graphModel.addConnection(connId);
   }
 
-
   _newSceneJson["nodes"] = newNodesJsonArray;
   _newSceneJson["connections"] = newConnJsonArray;
 }
 
-
 //-------------------------------------
 
-
-
-DisconnectCommand::
-DisconnectCommand(BasicGraphicsScene* scene,
-                  ConnectionId const connId)
-  : _scene(scene)
-  , _connId(connId)
+DisconnectCommand::DisconnectCommand(BasicGraphicsScene* scene, ConnectionId const connId)
+  : _scene(scene), _connId(connId)
 {
   //
 }
 
-void
-DisconnectCommand::
-undo()
-{
-  _scene->graphModel().addConnection(_connId);
-}
+void DisconnectCommand::undo() { _scene->graphModel().addConnection(_connId); }
 
-
-void
-DisconnectCommand::
-redo()
-{
-  _scene->graphModel().deleteConnection(_connId);
-}
-
+void DisconnectCommand::redo() { _scene->graphModel().deleteConnection(_connId); }
 
 //------
 
-
-ConnectCommand::
-ConnectCommand(BasicGraphicsScene* scene,
-               ConnectionId const connId)
-  : _scene(scene)
-  , _connId(connId)
+ConnectCommand::ConnectCommand(BasicGraphicsScene* scene, ConnectionId const connId)
+  : _scene(scene), _connId(connId)
 {
   //
 }
 
-void
-ConnectCommand::
-undo()
-{
-  _scene->graphModel().deleteConnection(_connId);
-}
+void ConnectCommand::undo() { _scene->graphModel().deleteConnection(_connId); }
 
-
-void
-ConnectCommand::
-redo()
-{
-  _scene->graphModel().addConnection(_connId);
-}
-
+void ConnectCommand::redo() { _scene->graphModel().addConnection(_connId); }
 
 //------
 
-
-MoveNodeCommand::
-MoveNodeCommand(BasicGraphicsScene* scene,
-                NodeId const nodeId,
-                QPointF const &diff)
-  : _scene(scene)
-  , _nodeId(nodeId)
-  , _diff(diff)
+MoveNodeCommand::MoveNodeCommand(BasicGraphicsScene* scene, NodeId const nodeId, QPointF const& diff)
+  : _scene(scene), _nodeId(nodeId), _diff(diff)
 {
 }
 
-void
-MoveNodeCommand::
-undo()
+void MoveNodeCommand::undo()
 {
-  auto oldPos = 
-    _scene->graphModel().nodeData(_nodeId,
-                                  NodeRole::Position).value<QPointF>();
+  auto oldPos = _scene->graphModel().nodeData(_nodeId, NodeRole::Position).value<QPointF>();
 
   oldPos -= _diff;
 
   _scene->graphModel().setNodeData(_nodeId, NodeRole::Position, oldPos);
 }
 
-
-void
-MoveNodeCommand::
-redo()
+void MoveNodeCommand::redo()
 {
-  auto oldPos = 
-    _scene->graphModel().nodeData(_nodeId,
-                                  NodeRole::Position).value<QPointF>();
+  auto oldPos = _scene->graphModel().nodeData(_nodeId, NodeRole::Position).value<QPointF>();
 
   oldPos += _diff;
 
   _scene->graphModel().setNodeData(_nodeId, NodeRole::Position, oldPos);
 }
 
+int MoveNodeCommand::id() const { return static_cast<int>(typeid(MoveNodeCommand).hash_code()); }
 
-int
-MoveNodeCommand::
-id() const
-{
-  return static_cast<int>(typeid(MoveNodeCommand).hash_code());
-}
-
-
-bool
-MoveNodeCommand::
-mergeWith(QUndoCommand const *c) 
+bool MoveNodeCommand::mergeWith(QUndoCommand const* c)
 {
   auto mc = static_cast<MoveNodeCommand const*>(c);
 
@@ -409,4 +323,4 @@ mergeWith(QUndoCommand const *c)
 }
 
 //
-}
+} // namespace QtNodes

@@ -3,13 +3,11 @@
 #include <QtCore/QFile>
 #include <QtWidgets/QMessageBox>
 
-using QtNodes::NodeDelegateModelRegistry;
-using QtNodes::NodeDelegateModel;
 using QtNodes::NodeDataType;
+using QtNodes::NodeDelegateModel;
+using QtNodes::NodeDelegateModelRegistry;
 
-std::unique_ptr<NodeDelegateModel>
-NodeDelegateModelRegistry::
-create(QString const& modelName)
+std::unique_ptr<NodeDelegateModel> NodeDelegateModelRegistry::create(QString const& modelName)
 {
   auto it = _registeredItemCreators.find(modelName);
 
@@ -21,27 +19,19 @@ create(QString const& modelName)
   return nullptr;
 }
 
-
-NodeDelegateModelRegistry::RegisteredModelCreatorsMap const &
-NodeDelegateModelRegistry::
-registeredModelCreators() const
+NodeDelegateModelRegistry::RegisteredModelCreatorsMap const&
+NodeDelegateModelRegistry::registeredModelCreators() const
 {
   return _registeredItemCreators;
 }
 
-
-NodeDelegateModelRegistry::RegisteredModelsCategoryMap const &
-NodeDelegateModelRegistry::
-registeredModelsCategoryAssociation() const
+NodeDelegateModelRegistry::RegisteredModelsCategoryMap const&
+NodeDelegateModelRegistry::registeredModelsCategoryAssociation() const
 {
   return _registeredModelsCategory;
 }
 
-
-NodeDelegateModelRegistry::CategoriesSet const &
-NodeDelegateModelRegistry::
-categories() const
+NodeDelegateModelRegistry::CategoriesSet const& NodeDelegateModelRegistry::categories() const
 {
   return _categories;
 }
-

@@ -10,16 +10,12 @@
 namespace QtNodes
 {
 
-ConnectionState::
-~ConnectionState()
+ConnectionState::~ConnectionState()
 {
-  //resetLastHoveredNode();
+  // resetLastHoveredNode();
 }
 
-
-PortType
-ConnectionState::
-requiredPort() const
+PortType ConnectionState::requiredPort() const
 {
   PortType t = PortType::None;
 
@@ -35,62 +31,29 @@ requiredPort() const
   return t;
 }
 
-
-bool
-ConnectionState::
-requiresPort() const
+bool ConnectionState::requiresPort() const
 {
   const ConnectionId& id = _cgo.connectionId();
-  return id.outNodeId == InvalidNodeId ||
-         id.inNodeId == InvalidNodeId;
+  return id.outNodeId == InvalidNodeId || id.inNodeId == InvalidNodeId;
 }
 
+bool ConnectionState::hovered() const { return _hovered; }
 
-bool
-ConnectionState::
-hovered() const
-{
-  return _hovered;
-}
+void ConnectionState::setHovered(bool hovered) { _hovered = hovered; }
 
+void ConnectionState::setLastHoveredNode(NodeId const nodeId) { _lastHoveredNode = nodeId; }
 
-void
-ConnectionState::
-setHovered(bool hovered)
-{
-  _hovered = hovered;
-}
+NodeId ConnectionState::lastHoveredNode() const { return _lastHoveredNode; }
 
-
-void
-ConnectionState::
-setLastHoveredNode(NodeId const nodeId)
-{
-  _lastHoveredNode = nodeId;
-}
-
-
-NodeId
-ConnectionState::
-lastHoveredNode() const
-{
-  return _lastHoveredNode;
-}
-
-
-void
-ConnectionState::
-resetLastHoveredNode()
+void ConnectionState::resetLastHoveredNode()
 {
   if (_lastHoveredNode != InvalidNodeId)
   {
-    auto ngo =
-      _cgo.nodeScene()->nodeGraphicsObject(_lastHoveredNode);
+    auto ngo = _cgo.nodeScene()->nodeGraphicsObject(_lastHoveredNode);
     ngo->update();
   }
 
   _lastHoveredNode = InvalidNodeId;
 }
 
-
-}
+} // namespace QtNodes

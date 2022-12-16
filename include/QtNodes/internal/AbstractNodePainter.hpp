@@ -6,7 +6,8 @@
 
 class QPainter;
 
-namespace QtNodes {
+namespace QtNodes
+{
 
 class NodeGraphicsObject;
 class NodeDataModel;
@@ -24,9 +25,6 @@ public:
    * `NodeGraphicsObject::nodeScene()->nodeGeometry()`
    * `NodeGraphicsObject::graphModel()`
    */
-  virtual
-  void
-  paint(QPainter* painter,
-        NodeGraphicsObject & ngo) const = 0;
+  virtual void paint(QPainter* painter, NodeGraphicsObject& ngo) const = 0;
 };
-}
+} // namespace QtNodes

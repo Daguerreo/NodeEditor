@@ -10,9 +10,7 @@
 namespace QtNodes
 {
 
-inline
-PortIndex
-getNodeId(PortType portType, ConnectionId connectionId)
+inline PortIndex getNodeId(PortType portType, ConnectionId connectionId)
 {
   NodeId id = InvalidNodeId;
 
@@ -28,10 +26,7 @@ getNodeId(PortType portType, ConnectionId connectionId)
   return id;
 }
 
-
-inline
-PortIndex
-getPortIndex(PortType portType, ConnectionId connectionId)
+inline PortIndex getPortIndex(PortType portType, ConnectionId connectionId)
 {
   PortIndex index = InvalidPortIndex;
 
@@ -47,74 +42,52 @@ getPortIndex(PortType portType, ConnectionId connectionId)
   return index;
 }
 
-
-inline
-PortType
-oppositePort(PortType port)
+inline PortType oppositePort(PortType port)
 {
   PortType result = PortType::None;
 
   switch (port)
   {
-    case PortType::In:
+    case PortType::In :
       result = PortType::Out;
       break;
 
-    case PortType::Out:
+    case PortType::Out :
       result = PortType::In;
       break;
 
-    case PortType::None:
+    case PortType::None :
       result = PortType::None;
       break;
 
-    default:
+    default :
       break;
   }
   return result;
 }
 
+inline bool isPortIndexValid(PortIndex index) { return index != InvalidPortIndex; }
 
-inline
-bool
-isPortIndexValid(PortIndex index)
-{
-  return index != InvalidPortIndex;
-}
-
-
-inline
-bool
-isPortTypeValid(PortType portType)
-{
-  return portType != PortType::None;
-}
-
+inline bool isPortTypeValid(PortType portType) { return portType != PortType::None; }
 
 /**
  * Creates a connection Id instance filled just on one side.
  */
-inline
-ConnectionId
-makeIncompleteConnectionId(NodeId const    connectedNodeId,
-                           PortType const  connectedPort,
-                           PortIndex const connectedPortIndex)
+inline ConnectionId makeIncompleteConnectionId(NodeId const connectedNodeId,
+                                               PortType const connectedPort,
+                                               PortIndex const connectedPortIndex)
 {
-  return (connectedPort == PortType::In) ?
-         ConnectionId{InvalidNodeId, InvalidPortIndex,
-                      connectedNodeId, connectedPortIndex} :
-         ConnectionId{connectedNodeId, connectedPortIndex,
-                      InvalidNodeId, InvalidPortIndex};
+  return (connectedPort == PortType::In)
+           ? ConnectionId{InvalidNodeId, InvalidPortIndex, connectedNodeId, connectedPortIndex}
+           : ConnectionId{connectedNodeId, connectedPortIndex, InvalidNodeId, InvalidPortIndex};
 }
 
 /**
  * Turns a full connection Id into an incomplete one by removing the
  * data on the given side
  */
-inline
-ConnectionId
-makeIncompleteConnectionId(ConnectionId   connectionId,
-                           PortType const portToDisconnect)
+inline ConnectionId makeIncompleteConnectionId(ConnectionId connectionId,
+                                               PortType const portToDisconnect)
 {
   if (portToDisconnect == PortType::Out)
   {
@@ -130,12 +103,9 @@ makeIncompleteConnectionId(ConnectionId   connectionId,
   return connectionId;
 }
 
-
-inline
-ConnectionId
-makeCompleteConnectionId(ConnectionId    incompleteConnectionId,
-                         NodeId const    nodeId,
-                         PortIndex const portIndex)
+inline ConnectionId makeCompleteConnectionId(ConnectionId incompleteConnectionId,
+                                             NodeId const nodeId,
+                                             PortIndex const portIndex)
 {
   if (incompleteConnectionId.outNodeId == InvalidNodeId)
   {
@@ -151,26 +121,20 @@ makeCompleteConnectionId(ConnectionId    incompleteConnectionId,
   return incompleteConnectionId;
 }
 
-
-
-
-inline
-std::ostream &
-operator<<(std::ostream & ostr, ConnectionId const connectionId)
+inline std::ostream& operator<<(std::ostream& ostr, ConnectionId const connectionId)
 {
-  ostr << "(" << connectionId.outNodeId
-       << ", " << (isPortIndexValid(connectionId.outPortIndex) ?  std::to_string(connectionId.outPortIndex) : "INVALID")
-       << ", " << connectionId.inNodeId
-       << ", " << (isPortIndexValid(connectionId.inPortIndex) ?  std::to_string(connectionId.inPortIndex) : "INVALID")
+  ostr << "(" << connectionId.outNodeId << ", "
+       << (isPortIndexValid(connectionId.outPortIndex) ? std::to_string(connectionId.outPortIndex)
+                                                       : "INVALID")
+       << ", " << connectionId.inNodeId << ", "
+       << (isPortIndexValid(connectionId.inPortIndex) ? std::to_string(connectionId.inPortIndex)
+                                                      : "INVALID")
        << ")" << std::endl;
 
   return ostr;
 }
 
-
-inline
-QJsonObject
-toJson(ConnectionId const & connId)
+inline QJsonObject toJson(ConnectionId const& connId)
 {
   QJsonObject connJson;
 
@@ -182,10 +146,7 @@ toJson(ConnectionId const & connId)
   return connJson;
 }
 
-
-inline
-ConnectionId
-fromJson(QJsonObject const & connJson)
+inline ConnectionId fromJson(QJsonObject const& connJson)
 {
   ConnectionId connId{static_cast<NodeId>(connJson["outNodeId"].toInt(InvalidNodeId)),
                       static_cast<PortIndex>(connJson["outPortIndex"].toInt(InvalidPortIndex)),
@@ -195,5 +156,4 @@ fromJson(QJsonObject const & connJson)
   return connId;
 }
 
-
-}
+} // namespace QtNodes

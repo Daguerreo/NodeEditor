@@ -8,11 +8,11 @@
 
 class DecimalData;
 
-using QtNodes::PortType;
-using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDelegateModel;
+using QtNodes::PortIndex;
+using QtNodes::PortType;
 
 class QLineEdit;
 
@@ -25,59 +25,39 @@ class NumberSourceDataModel : public NodeDelegateModel
 public:
   NumberSourceDataModel();
 
-  virtual
-  ~NumberSourceDataModel() {}
+  virtual ~NumberSourceDataModel() {}
 
 public:
+  QString caption() const override { return QStringLiteral("Number Source"); }
 
-  QString
-  caption() const override
-  { return QStringLiteral("Number Source"); }
+  bool captionVisible() const override { return false; }
 
-  bool
-  captionVisible() const override
-  { return false; }
-
-  QString
-  name() const override
-  { return QStringLiteral("NumberSource"); }
+  QString name() const override { return QStringLiteral("NumberSource"); }
 
 public:
+  QJsonObject save() const override;
 
-  QJsonObject
-  save() const override;
-
-  void
-  load(QJsonObject const& p) override;
+  void load(QJsonObject const& p) override;
 
 public:
+  unsigned int nPorts(PortType portType) const override;
 
-  unsigned int
-  nPorts(PortType portType) const override;
+  NodeDataType dataType(PortType portType, PortIndex portIndex) const override;
 
-  NodeDataType
-  dataType(PortType portType, PortIndex portIndex) const override;
+  std::shared_ptr<NodeData> outData(PortIndex port) override;
 
-  std::shared_ptr<NodeData>
-  outData(PortIndex port) override;
+  void setInData(std::shared_ptr<NodeData>, PortIndex) override {}
 
-  void
-  setInData(std::shared_ptr<NodeData>, PortIndex) override
-  {}
-
-  QWidget *
-  embeddedWidget() override;
+  QWidget* embeddedWidget() override;
 
 public:
   void setNumber(double number);
 
 private Q_SLOTS:
 
-  void
-  onTextEdited(QString const& string);
+  void onTextEdited(QString const& string);
 
 private:
-
   std::shared_ptr<DecimalData> _number;
 
   QLineEdit* _lineEdit;

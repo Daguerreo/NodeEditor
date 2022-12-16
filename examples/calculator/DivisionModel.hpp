@@ -1,7 +1,7 @@
 #pragma once
 
-#include "MathOperationDataModel.hpp"
 #include "DecimalData.hpp"
+#include "MathOperationDataModel.hpp"
 
 #include <QtNodes/NodeDelegateModel>
 
@@ -13,28 +13,23 @@
 class DivisionModel : public MathOperationDataModel
 {
 public:
-
-  virtual
-  ~DivisionModel() {}
+  virtual ~DivisionModel() {}
 
 public:
-  QString
-  caption() const override
-  { return QStringLiteral("Division"); }
+  QString caption() const override { return QStringLiteral("Division"); }
 
-  bool
-  portCaptionVisible(PortType portType, PortIndex portIndex) const override
+  bool portCaptionVisible(PortType portType, PortIndex portIndex) const override
   {
-    Q_UNUSED(portType); Q_UNUSED(portIndex);
+    Q_UNUSED(portType);
+    Q_UNUSED(portIndex);
     return true;
   }
 
-  QString
-  portCaption(PortType portType, PortIndex portIndex) const override
+  QString portCaption(PortType portType, PortIndex portIndex) const override
   {
     switch (portType)
     {
-      case PortType::In:
+      case PortType::In :
         if (portIndex == 0)
           return QStringLiteral("Dividend");
         else if (portIndex == 1)
@@ -42,23 +37,19 @@ public:
 
         break;
 
-      case PortType::Out:
+      case PortType::Out :
         return QStringLiteral("Result");
 
-      default:
+      default :
         break;
     }
     return QString();
   }
 
-  QString
-  name() const override
-  { return QStringLiteral("Division"); }
+  QString name() const override { return QStringLiteral("Division"); }
 
 private:
-
-  void
-  compute() override
+  void compute() override
   {
     PortIndex const outPortIndex = 0;
 
@@ -67,25 +58,23 @@ private:
 
     if (n2 && (n2->number() == 0.0))
     {
-      //modelValidationState = NodeValidationState::Error;
-      //modelValidationError = QStringLiteral("Division by zero error");
+      // modelValidationState = NodeValidationState::Error;
+      // modelValidationError = QStringLiteral("Division by zero error");
       _result.reset();
     }
     else if (n1 && n2)
     {
-      //modelValidationState = NodeValidationState::Valid;
-      //modelValidationError = QString();
-      _result = std::make_shared<DecimalData>(n1->number() /
-                                              n2->number());
+      // modelValidationState = NodeValidationState::Valid;
+      // modelValidationError = QString();
+      _result = std::make_shared<DecimalData>(n1->number() / n2->number());
     }
     else
     {
-      //modelValidationState = NodeValidationState::Warning;
-      //modelValidationError = QStringLiteral("Missing or incorrect inputs");
+      // modelValidationState = NodeValidationState::Warning;
+      // modelValidationError = QStringLiteral("Missing or incorrect inputs");
       _result.reset();
     }
 
     Q_EMIT dataUpdated(outPortIndex);
   }
-
 };

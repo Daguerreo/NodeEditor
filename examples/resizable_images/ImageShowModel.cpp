@@ -4,14 +4,11 @@
 
 #include <QtNodes/NodeDelegateModelRegistry>
 
-#include <QtCore/QEvent>
 #include <QtCore/QDir>
+#include <QtCore/QEvent>
 #include <QtWidgets/QFileDialog>
 
-
-ImageShowModel::
-ImageShowModel()
-  : _label(new QLabel("Image will appear here"))
+ImageShowModel::ImageShowModel() : _label(new QLabel("Image will appear here"))
 {
   _label->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
 
@@ -26,33 +23,27 @@ ImageShowModel()
   _label->installEventFilter(this);
 }
 
-
-unsigned int
-ImageShowModel::
-nPorts(PortType portType) const
+unsigned int ImageShowModel::nPorts(PortType portType) const
 {
   unsigned int result = 1;
 
   switch (portType)
   {
-    case PortType::In:
+    case PortType::In :
       result = 1;
       break;
 
-    case PortType::Out:
+    case PortType::Out :
       result = 1;
 
-    default:
+    default :
       break;
   }
 
   return result;
 }
 
-
-bool
-ImageShowModel::
-eventFilter(QObject* object, QEvent* event)
+bool ImageShowModel::eventFilter(QObject* object, QEvent* event)
 {
   if (object == _label)
   {
@@ -72,26 +63,14 @@ eventFilter(QObject* object, QEvent* event)
   return false;
 }
 
-
-NodeDataType
-ImageShowModel::
-dataType(PortType const, PortIndex const) const
+NodeDataType ImageShowModel::dataType(PortType const, PortIndex const) const
 {
   return PixmapData().type();
 }
 
+std::shared_ptr<NodeData> ImageShowModel::outData(PortIndex) { return _nodeData; }
 
-std::shared_ptr<NodeData>
-ImageShowModel::
-outData(PortIndex)
-{
-  return _nodeData;
-}
-
-
-void
-ImageShowModel::
-setInData(std::shared_ptr<NodeData> nodeData, PortIndex const)
+void ImageShowModel::setInData(std::shared_ptr<NodeData> nodeData, PortIndex const)
 {
   _nodeData = nodeData;
 
@@ -111,4 +90,3 @@ setInData(std::shared_ptr<NodeData> nodeData, PortIndex const)
 
   Q_EMIT dataUpdated(0);
 }
-

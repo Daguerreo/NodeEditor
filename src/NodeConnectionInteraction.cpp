@@ -11,23 +11,17 @@
 
 #include <QUndoStack>
 
-
 namespace QtNodes
 {
 
-NodeConnectionInteraction::
-NodeConnectionInteraction(NodeGraphicsObject & ngo,
-                          ConnectionGraphicsObject & cgo,
-                          BasicGraphicsScene & scene)
-  : _ngo(ngo)
-  , _cgo(cgo)
-  , _scene(scene)
-{}
+NodeConnectionInteraction::NodeConnectionInteraction(NodeGraphicsObject& ngo,
+                                                     ConnectionGraphicsObject& cgo,
+                                                     BasicGraphicsScene& scene)
+  : _ngo(ngo), _cgo(cgo), _scene(scene)
+{
+}
 
-
-bool
-NodeConnectionInteraction::
-canConnect(PortIndex * portIndex) const
+bool NodeConnectionInteraction::canConnect(PortIndex* portIndex) const
 {
   // 1. Connection requires a port.
 
@@ -38,9 +32,7 @@ canConnect(PortIndex * portIndex) const
     return false;
   }
 
-  NodeId connectedNodeId =
-    getNodeId(oppositePort(requiredPort), 
-              _cgo.connectionId());
+  NodeId connectedNodeId = getNodeId(oppositePort(requiredPort), _cgo.connectionId());
 
   // 2. Forbid connecting the node to itself.
 
@@ -49,11 +41,9 @@ canConnect(PortIndex * portIndex) const
 
   // 3. Connection loose end is above the node port.
 
-  QPointF connectionPoint =
-    _cgo.sceneTransform().map(_cgo.endPoint(requiredPort));
+  QPointF connectionPoint = _cgo.sceneTransform().map(_cgo.endPoint(requiredPort));
 
-  *portIndex = nodePortIndexUnderScenePoint(requiredPort,
-                                            connectionPoint);
+  *portIndex = nodePortIndexUnderScenePoint(requiredPort, connectionPoint);
 
   if (*portIndex == InvalidPortIndex)
   {
@@ -62,20 +52,16 @@ canConnect(PortIndex * portIndex) const
 
   // 4. Model allows connection.
 
-  AbstractGraphModel & model = _ngo.nodeScene()->graphModel();
+  AbstractGraphModel& model = _ngo.nodeScene()->graphModel();
 
-  ConnectionId connectionId =
-    makeCompleteConnectionId(_cgo.connectionId(), // incomplete
-                             _ngo.nodeId(), // missing node id
-                             *portIndex); // missing port index
+  ConnectionId connectionId = makeCompleteConnectionId(_cgo.connectionId(), // incomplete
+                                                       _ngo.nodeId(),       // missing node id
+                                                       *portIndex);         // missing port index
 
   return model.connectionPossible(connectionId);
 }
 
-
-bool
-NodeConnectionInteraction::
-tryConnect() const
+bool NodeConnectionInteraction::tryConnect() const
 {
   // 1. Check conditions from 'canConnect'.
 
@@ -89,95 +75,72 @@ tryConnect() const
 
   ConnectionId incompleteConnectionId = _cgo.connectionId();
 
-  ConnectionId newConnectionId =
-    makeCompleteConnectionId(incompleteConnectionId,
-                             _ngo.nodeId(),
-                             targetPortIndex);
+  ConnectionId newConnectionId = makeCompleteConnectionId(incompleteConnectionId,
+                                                          _ngo.nodeId(),
+                                                          targetPortIndex);
 
   _ngo.nodeScene()->resetDraftConnection();
 
-  _ngo.nodeScene()->undoStack().push(new ConnectCommand(_ngo.nodeScene(),
-                                                        newConnectionId));
+  _ngo.nodeScene()->undoStack().push(new ConnectCommand(_ngo.nodeScene(), newConnectionId));
 
   return true;
 }
 
-
-bool
-NodeConnectionInteraction::
-disconnect(PortType portToDisconnect) const
+bool NodeConnectionInteraction::disconnect(PortType portToDisconnect) const
 {
   ConnectionId connectionId = _cgo.connectionId();
 
-  _scene.undoStack().push(new DisconnectCommand(&_scene,
-                                                connectionId));
+  _scene.undoStack().push(new DisconnectCommand(&_scene, connectionId));
 
-  AbstractNodeGeometry & geometry = _scene.nodeGeometry();
+  AbstractNodeGeometry& geometry = _scene.nodeGeometry();
 
-  QPointF scenePos =
-    geometry.portScenePosition(_ngo.nodeId(),
-                               portToDisconnect,
-                               getPortIndex(portToDisconnect,
-                                            connectionId),
-                               _ngo.sceneTransform());
+  QPointF scenePos = geometry.portScenePosition(_ngo.nodeId(),
+                                                portToDisconnect,
+                                                getPortIndex(portToDisconnect, connectionId),
+                                                _ngo.sceneTransform());
 
   // Converted to "draft" connection with the new incomplete id.
-  ConnectionId incompleteConnectionId =
-    makeIncompleteConnectionId(connectionId, portToDisconnect);
+  ConnectionId incompleteConnectionId = makeIncompleteConnectionId(connectionId, portToDisconnect);
 
   // Grabs the mouse
-  auto const & draftConnection =
-    _scene.makeDraftConnection(incompleteConnectionId);
+  auto const& draftConnection = _scene.makeDraftConnection(incompleteConnectionId);
 
   QPointF const looseEndPos = draftConnection->mapFromScene(scenePos);
   draftConnection->setEndPoint(portToDisconnect, looseEndPos);
 
   // Repaint connection points.
-  NodeId connectedNodeId =
-    getNodeId(oppositePort(portToDisconnect), connectionId);
+  NodeId connectedNodeId = getNodeId(oppositePort(portToDisconnect), connectionId);
   _scene.nodeGraphicsObject(connectedNodeId)->update();
 
-  NodeId disconnectedNodeId =
-    getNodeId(portToDisconnect, connectionId);
+  NodeId disconnectedNodeId = getNodeId(portToDisconnect, connectionId);
   _scene.nodeGraphicsObject(disconnectedNodeId)->update();
 
   return true;
 }
 
-
 // ------------------ util functions below
 
-PortType
-NodeConnectionInteraction::
-connectionRequiredPort() const
+PortType NodeConnectionInteraction::connectionRequiredPort() const
 {
-  auto const &state = _cgo.connectionState();
+  auto const& state = _cgo.connectionState();
 
   return state.requiredPort();
 }
 
-
-QPointF
-NodeConnectionInteraction::
-nodePortScenePosition(PortType portType, PortIndex portIndex) const
+QPointF NodeConnectionInteraction::nodePortScenePosition(PortType portType,
+                                                         PortIndex portIndex) const
 {
-  AbstractNodeGeometry & geometry = _scene.nodeGeometry();
+  AbstractNodeGeometry& geometry = _scene.nodeGeometry();
 
-  QPointF p = geometry.portScenePosition(_ngo.nodeId(),
-                                         portType,
-                                         portIndex,
-                                         _ngo.sceneTransform());
+  QPointF p = geometry.portScenePosition(_ngo.nodeId(), portType, portIndex, _ngo.sceneTransform());
 
   return p;
 }
 
-
-PortIndex
-NodeConnectionInteraction::
-nodePortIndexUnderScenePoint(PortType portType,
-                             QPointF const & scenePoint) const
+PortIndex NodeConnectionInteraction::nodePortIndexUnderScenePoint(PortType portType,
+                                                                  QPointF const& scenePoint) const
 {
-  AbstractNodeGeometry & geometry = _scene.nodeGeometry();
+  AbstractNodeGeometry& geometry = _scene.nodeGeometry();
 
   QTransform sceneTransform = _ngo.sceneTransform();
 
@@ -186,5 +149,4 @@ nodePortIndexUnderScenePoint(PortType portType,
   return geometry.checkPortHit(_ngo.nodeId(), portType, nodePoint);
 }
 
-
-}
+} // namespace QtNodes

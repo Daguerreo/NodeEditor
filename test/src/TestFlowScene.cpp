@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-
 using QtNodes::Connection;
 using QtNodes::DataModelRegistry;
 using QtNodes::FlowScene;
@@ -30,40 +29,23 @@ TEST_CASE("FlowScene triggers connections created or deleted", "[gui]")
   {
     unsigned int nPorts(PortType) const override { return 1; }
 
-    void
-    inputConnectionCreated(Connection const&) override
-    {
-      inputCreatedCalledCount++;
-    }
+    void inputConnectionCreated(Connection const&) override { inputCreatedCalledCount++; }
 
-    void
-    inputConnectionDeleted(Connection const&) override
-    {
-      inputDeletedCalledCount++;
-    }
+    void inputConnectionDeleted(Connection const&) override { inputDeletedCalledCount++; }
 
-    void
-    outputConnectionCreated(Connection const&) override
-    {
-      outputCreatedCalledCount++;
-    }
+    void outputConnectionCreated(Connection const&) override { outputCreatedCalledCount++; }
 
-    void
-    outputConnectionDeleted(Connection const&) override
-    {
-      outputDeletedCalledCount++;
-    }
+    void outputConnectionDeleted(Connection const&) override { outputDeletedCalledCount++; }
 
-    int inputCreatedCalledCount  = 0;
-    int inputDeletedCalledCount  = 0;
+    int inputCreatedCalledCount = 0;
+    int inputDeletedCalledCount = 0;
     int outputCreatedCalledCount = 0;
     int outputDeletedCalledCount = 0;
 
-    void
-    resetCallCounts()
+    void resetCallCounts()
     {
-      inputCreatedCalledCount  = 0;
-      inputDeletedCalledCount  = 0;
+      inputCreatedCalledCount = 0;
+      inputDeletedCalledCount = 0;
       outputCreatedCalledCount = 0;
       outputDeletedCalledCount = 0;
     }
@@ -73,22 +55,21 @@ TEST_CASE("FlowScene triggers connections created or deleted", "[gui]")
 
   FlowScene scene;
 
-  Node& fromNode      = scene.createNode(std::make_unique<MockDataModel>());
-  Node& toNode        = scene.createNode(std::make_unique<MockDataModel>());
+  Node& fromNode = scene.createNode(std::make_unique<MockDataModel>());
+  Node& toNode = scene.createNode(std::make_unique<MockDataModel>());
   Node& unrelatedNode = scene.createNode(std::make_unique<MockDataModel>());
 
-  auto& fromNgo      = fromNode.nodeGraphicsObject();
-  auto& toNgo        = toNode.nodeGraphicsObject();
+  auto& fromNgo = fromNode.nodeGraphicsObject();
+  auto& toNgo = toNode.nodeGraphicsObject();
   auto& unrelatedNgo = unrelatedNode.nodeGraphicsObject();
 
   fromNgo.setPos(0, 0);
   toNgo.setPos(200, 20);
   unrelatedNgo.setPos(-100, -100);
 
-  auto& from      = dynamic_cast<MockDataModel&>(*fromNode.nodeDataModel());
-  auto& to        = dynamic_cast<MockDataModel&>(*toNode.nodeDataModel());
+  auto& from = dynamic_cast<MockDataModel&>(*fromNode.nodeDataModel());
+  auto& to = dynamic_cast<MockDataModel&>(*toNode.nodeDataModel());
   auto& unrelated = dynamic_cast<MockDataModel&>(*unrelatedNode.nodeDataModel());
-
 
   SECTION("creating half a connection (not finishing the connection)")
   {
@@ -108,14 +89,16 @@ TEST_CASE("FlowScene triggers connections created or deleted", "[gui]")
 
   struct Creation
   {
-    std::string                                  name;
+    std::string name;
     std::function<std::shared_ptr<Connection>()> createConnection;
   };
 
   Creation sceneCreation{"scene.createConnection",
                          [&] { return scene.createConnection(toNode, 0, fromNode, 0); }};
 
-  Creation partialCreation{"scene.createConnection-by partial", [&] {
+  Creation partialCreation{"scene.createConnection-by partial",
+                           [&]
+                           {
                              auto connection = scene.createConnection(PortType::Out, fromNode, 0);
                              connection->setNodeToPort(toNode, PortType::In, 0);
 
@@ -124,18 +107,18 @@ TEST_CASE("FlowScene triggers connections created or deleted", "[gui]")
 
   struct Deletion
   {
-    std::string                                      name;
-    std::function<void(Connection & connection)> deleteConnection;
+    std::string name;
+    std::function<void(Connection& connection)> deleteConnection;
   };
 
   Deletion sceneDeletion{"scene.deleteConnection",
-                         [&](Connection & c) { scene.deleteConnection(c); }};
+                         [&](Connection& c) { scene.deleteConnection(c); }};
 
   Deletion partialDragDeletion{"scene-deleteConnectionByDraggingOff",
-                               [&](Connection & c)
+                               [&](Connection& c)
                                {
                                  PortIndex portIndex = c.getPortIndex(PortType::In);
-                                 Node * node = c.getNode(PortType::In);
+                                 Node* node = c.getNode(PortType::In);
                                  node->nodeState().getEntries(PortType::In)[portIndex].clear();
                                  c.clearNode(PortType::In);
                                }};
@@ -172,7 +155,7 @@ TEST_CASE("FlowScene triggers connections created or deleted", "[gui]")
     {
       SECTION("deletion: " + deletion.name)
       {
-        Connection & connection = *sceneCreation.createConnection();
+        Connection& connection = *sceneCreation.createConnection();
 
         from.resetCallCounts();
         to.resetCallCounts();
@@ -194,7 +177,6 @@ TEST_CASE("FlowScene triggers connections created or deleted", "[gui]")
   }
 }
 
-
 TEST_CASE("FlowScene's DataModelRegistry outlives nodes and connections", "[asan][gui]")
 {
   class MockDataModel : public StubNodeDataModel
@@ -205,10 +187,7 @@ TEST_CASE("FlowScene's DataModelRegistry outlives nodes and connections", "[asan
     {
     }
 
-    ~MockDataModel()
-    {
-      (*incrementOnDestruction)++;
-    }
+    ~MockDataModel() { (*incrementOnDestruction)++; }
 
     // The reference ensures that we point into the memory that would be free'd
     // if the DataModelRegistry doesn't outlive this node
@@ -222,11 +201,7 @@ TEST_CASE("FlowScene's DataModelRegistry outlives nodes and connections", "[asan
     {
     }
 
-    auto
-    operator()() const
-    {
-      return std::make_unique<MockDataModel>(shouldBeAliveWhenAssignedTo);
-    }
+    auto operator()() const { return std::make_unique<MockDataModel>(shouldBeAliveWhenAssignedTo); }
 
     int* shouldBeAliveWhenAssignedTo;
   };

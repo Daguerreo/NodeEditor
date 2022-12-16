@@ -4,26 +4,24 @@
 
 #include <QtGui/QFontMetrics>
 
-
 namespace QtNodes
 {
 
 class AbstractGraphModel;
 class BasicGraphicsScene;
 
-
 class NODE_EDITOR_PUBLIC DefaultVerticalNodeGeometry : public AbstractNodeGeometry
 {
 public:
-  DefaultVerticalNodeGeometry(AbstractGraphModel & graphModel);
+  DefaultVerticalNodeGeometry(AbstractGraphModel& graphModel);
 
 public:
   QSize size(NodeId const nodeId) const override;
 
   void recomputeSize(NodeId const nodeId) const override;
 
-  QPointF portPosition(NodeId const    nodeId,
-                       PortType const  portType,
+  QPointF portPosition(NodeId const nodeId,
+                       PortType const portType,
                        PortIndex const index) const override;
 
   QPointF portTextPosition(NodeId const nodeId,
@@ -37,19 +35,16 @@ public:
   QPointF widgetPosition(NodeId const nodeId) const override;
 
   QRect resizeHandleRect(NodeId const nodeId) const override;
+
 private:
-  QRectF
-  portTextRect(NodeId const   nodeId,
-               PortType const portType,
-               PortIndex const portIndex) const;
+  QRectF portTextRect(NodeId const nodeId, PortType const portType, PortIndex const portIndex) const;
   /// Finds
   unsigned int maxHorizontalPortsExtent(NodeId const nodeId) const;
 
-  unsigned int maxPortsTextAdvance(NodeId const   nodeId,
-                                   PortType const portType) const;
+  unsigned int maxPortsTextAdvance(NodeId const nodeId, PortType const portType) const;
 
-  unsigned int portCaptionsHeight(NodeId const   nodeId,
-                                  PortType const portType) const;
+  unsigned int portCaptionsHeight(NodeId const nodeId, PortType const portType) const;
+
 private:
   // Some variables are mutable because we need to change drawing
   // metrics corresponding to fontMetrics but this doesn't change
@@ -61,4 +56,4 @@ private:
   mutable QFontMetrics _boldFontMetrics;
 };
 
-}
+} // namespace QtNodes

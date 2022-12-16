@@ -5,17 +5,12 @@
 namespace QtNodes
 {
 
-NodeDelegateModel::
-NodeDelegateModel()
-  : _nodeStyle(StyleCollection::nodeStyle())
+NodeDelegateModel::NodeDelegateModel() : _nodeStyle(StyleCollection::nodeStyle())
 {
   // Derived classes can initialize specific style here
 }
 
-
-QJsonObject
-NodeDelegateModel::
-save() const
+QJsonObject NodeDelegateModel::save() const
 {
   QJsonObject modelJson;
 
@@ -24,50 +19,31 @@ save() const
   return modelJson;
 }
 
-
-void
-NodeDelegateModel::
-load(QJsonObject const &)
+void NodeDelegateModel::load(QJsonObject const&)
 {
   //
 }
 
-
-ConnectionPolicy
-NodeDelegateModel::
-portConnectionPolicy(PortType portType, PortIndex) const
+ConnectionPolicy NodeDelegateModel::portConnectionPolicy(PortType portType, PortIndex) const
 {
   auto result = ConnectionPolicy::One;
   switch (portType)
   {
-    case PortType::In:
+    case PortType::In :
       result = ConnectionPolicy::One;
       break;
-    case PortType::Out:
+    case PortType::Out :
       result = ConnectionPolicy::Many;
       break;
-    case PortType::None:
+    case PortType::None :
       break;
   }
 
   return result;
 }
 
+NodeStyle const& NodeDelegateModel::nodeStyle() const { return _nodeStyle; }
 
-NodeStyle const &
-NodeDelegateModel::
-nodeStyle() const
-{
-  return _nodeStyle;
-}
-
-
-void
-NodeDelegateModel::
-setNodeStyle(NodeStyle const & style)
-{
-  _nodeStyle = style;
-}
-
+void NodeDelegateModel::setNodeStyle(NodeStyle const& style) { _nodeStyle = style; }
 
 } // namespace QtNodes

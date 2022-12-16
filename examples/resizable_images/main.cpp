@@ -1,24 +1,22 @@
 #include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/DataFlowGraphicsScene>
-#include <QtNodes/NodeDelegateModelRegistry>
 #include <QtNodes/GraphicsView>
 #include <QtNodes/NodeData>
+#include <QtNodes/NodeDelegateModelRegistry>
 
-#include <QtWidgets/QApplication>
 #include <QtGui/QScreen>
+#include <QtWidgets/QApplication>
 
-#include "ImageShowModel.hpp"
 #include "ImageLoaderModel.hpp"
+#include "ImageShowModel.hpp"
 
 using QtNodes::ConnectionStyle;
-using QtNodes::DataFlowGraphModel;
 using QtNodes::DataFlowGraphicsScene;
-using QtNodes::NodeDelegateModelRegistry;
+using QtNodes::DataFlowGraphModel;
 using QtNodes::GraphicsView;
+using QtNodes::NodeDelegateModelRegistry;
 
-
-static std::shared_ptr<NodeDelegateModelRegistry>
-registerDataModels()
+static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
   auto ret = std::make_shared<NodeDelegateModelRegistry>();
   ret->registerModel<ImageShowModel>();
@@ -28,9 +26,7 @@ registerDataModels()
   return ret;
 }
 
-
-int
-main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
 
@@ -50,4 +46,3 @@ main(int argc, char* argv[])
 
   return app.exec();
 }
-

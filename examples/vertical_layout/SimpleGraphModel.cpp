@@ -1,78 +1,50 @@
 #include "SimpleGraphModel.hpp"
 
+SimpleGraphModel::SimpleGraphModel() : _nextNodeId{0} {}
 
-SimpleGraphModel::
-SimpleGraphModel()
-  : _nextNodeId{0}
-{}
-
-
-SimpleGraphModel::
-~SimpleGraphModel()
+SimpleGraphModel::~SimpleGraphModel()
 {
   //
 }
 
+std::unordered_set<NodeId> SimpleGraphModel::allNodeIds() const { return _nodeIds; }
 
-std::unordered_set<NodeId>
-SimpleGraphModel::
-allNodeIds() const
-{
-  return _nodeIds;
-}
-
-
-std::unordered_set<ConnectionId>
-SimpleGraphModel::
-allConnectionIds(NodeId const nodeId) const
+std::unordered_set<ConnectionId> SimpleGraphModel::allConnectionIds(NodeId const nodeId) const
 {
   std::unordered_set<ConnectionId> result;
 
   std::copy_if(_connectivity.begin(),
                _connectivity.end(),
                std::inserter(result, std::end(result)),
-               [&nodeId](ConnectionId const & cid)
-               {
-                  return cid.inNodeId == nodeId ||
-                         cid.outNodeId == nodeId;
-               });
+               [&nodeId](ConnectionId const& cid)
+               { return cid.inNodeId == nodeId || cid.outNodeId == nodeId; });
 
   return result;
 }
 
-
-std::unordered_set<ConnectionId>
-SimpleGraphModel::
-connections(NodeId    nodeId,
-            PortType  portType,
-            PortIndex portIndex) const
+std::unordered_set<ConnectionId> SimpleGraphModel::connections(NodeId nodeId,
+                                                               PortType portType,
+                                                               PortIndex portIndex) const
 {
   std::unordered_set<ConnectionId> result;
 
   std::copy_if(_connectivity.begin(),
                _connectivity.end(),
                std::inserter(result, std::end(result)),
-               [&portType, &portIndex, &nodeId](ConnectionId const & cid)
-               {
-                  return (getNodeId(portType, cid) == nodeId &&
-                          getPortIndex(portType, cid) == portIndex);
+               [&portType, &portIndex, &nodeId](ConnectionId const& cid) {
+                 return (getNodeId(portType, cid) == nodeId &&
+                         getPortIndex(portType, cid) == portIndex);
                });
 
   return result;
 }
 
-
-bool
-SimpleGraphModel::
-connectionExists(ConnectionId const connectionId) const
+bool SimpleGraphModel::connectionExists(ConnectionId const connectionId) const
 {
   return (_connectivity.find(connectionId) != _connectivity.end());
 }
 
-
-NodeId
-SimpleGraphModel::
-addNode(QString const nodeType)
+NodeId SimpleGraphModel::addNode(QString const nodeType)
 {
   NodeId newId = _nextNodeId++;
   // Create new node.
@@ -83,36 +55,24 @@ addNode(QString const nodeType)
   return newId;
 }
 
-
-bool
-SimpleGraphModel::
-connectionPossible(ConnectionId const connectionId) const
+bool SimpleGraphModel::connectionPossible(ConnectionId const connectionId) const
 {
   return _connectivity.find(connectionId) == _connectivity.end();
 }
 
-
-void
-SimpleGraphModel::
-addConnection(ConnectionId const connectionId)
+void SimpleGraphModel::addConnection(ConnectionId const connectionId)
 {
   _connectivity.insert(connectionId);
 
   Q_EMIT connectionCreated(connectionId);
 }
 
-
-bool
-SimpleGraphModel::
-nodeExists(NodeId const nodeId) const
+bool SimpleGraphModel::nodeExists(NodeId const nodeId) const
 {
   return (_nodeIds.find(nodeId) != _nodeIds.end());
 }
 
-
-QVariant
-SimpleGraphModel::
-nodeData(NodeId nodeId, NodeRole role) const
+QVariant SimpleGraphModel::nodeData(NodeId nodeId, NodeRole role) const
 {
   Q_UNUSED(nodeId);
 
@@ -120,45 +80,45 @@ nodeData(NodeId nodeId, NodeRole role) const
 
   switch (role)
   {
-    case NodeRole::Type:
+    case NodeRole::Type :
       result = QString("Default Node Type");
       break;
 
-    case NodeRole::Position:
+    case NodeRole::Position :
       result = _nodeGeometryData[nodeId].pos;
       break;
 
-    case NodeRole::Size:
+    case NodeRole::Size :
       result = _nodeGeometryData[nodeId].size;
       break;
 
-    case NodeRole::CaptionVisible:
+    case NodeRole::CaptionVisible :
       result = true;
       break;
 
-    case NodeRole::Caption:
+    case NodeRole::Caption :
       result = QString("Node");
       break;
 
-    case NodeRole::Style:
+    case NodeRole::Style :
     {
       auto style = StyleCollection::nodeStyle();
       result = style.toJson().toVariantMap();
     }
     break;
 
-    case NodeRole::InternalData:
+    case NodeRole::InternalData :
       break;
 
-    case NodeRole::InPortCount:
+    case NodeRole::InPortCount :
       result = 5u;
       break;
 
-    case NodeRole::OutPortCount:
+    case NodeRole::OutPortCount :
       result = 3u;
       break;
 
-    case NodeRole::Widget:
+    case NodeRole::Widget :
       result = QVariant();
       break;
   }
@@ -166,20 +126,15 @@ nodeData(NodeId nodeId, NodeRole role) const
   return result;
 }
 
-
-bool
-SimpleGraphModel::
-setNodeData(NodeId   nodeId,
-            NodeRole role,
-            QVariant value)
+bool SimpleGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant value)
 {
   bool result = false;
 
   switch (role)
   {
-    case NodeRole::Type:
+    case NodeRole::Type :
       break;
-    case NodeRole::Position:
+    case NodeRole::Position :
     {
       _nodeGeometryData[nodeId].pos = value.value<QPointF>();
 
@@ -189,66 +144,62 @@ setNodeData(NodeId   nodeId,
     }
     break;
 
-    case NodeRole::Size:
+    case NodeRole::Size :
     {
-
       _nodeGeometryData[nodeId].size = value.value<QSize>();
       result = true;
     }
     break;
 
-    case NodeRole::CaptionVisible:
+    case NodeRole::CaptionVisible :
       break;
 
-    case NodeRole::Caption:
+    case NodeRole::Caption :
       break;
 
-    case NodeRole::Style:
+    case NodeRole::Style :
       break;
 
-    case NodeRole::InternalData:
+    case NodeRole::InternalData :
       break;
 
-    case NodeRole::InPortCount:
+    case NodeRole::InPortCount :
       break;
 
-    case NodeRole::OutPortCount:
+    case NodeRole::OutPortCount :
       break;
 
-    case NodeRole::Widget:
+    case NodeRole::Widget :
       break;
   }
 
   return result;
 }
 
-
-QVariant
-SimpleGraphModel::
-portData(NodeId    nodeId,
-         PortType  portType,
-         PortIndex portIndex,
-         PortRole  role) const
+QVariant SimpleGraphModel::portData(NodeId nodeId,
+                                    PortType portType,
+                                    PortIndex portIndex,
+                                    PortRole role) const
 {
   switch (role)
   {
-    case PortRole::Data:
+    case PortRole::Data :
       return QVariant();
       break;
 
-    case PortRole::DataType:
+    case PortRole::DataType :
       return QVariant();
       break;
 
-    case PortRole::ConnectionPolicyRole:
+    case PortRole::ConnectionPolicyRole :
       return QVariant::fromValue(ConnectionPolicy::One);
       break;
 
-    case PortRole::CaptionVisible:
+    case PortRole::CaptionVisible :
       return true;
       break;
 
-    case PortRole::Caption:
+    case PortRole::Caption :
       if (portType == PortType::In)
         return QString::fromUtf8("Port In");
       else
@@ -260,14 +211,11 @@ portData(NodeId    nodeId,
   return QVariant();
 }
 
-
-bool
-SimpleGraphModel::
-setPortData(NodeId    nodeId,
-            PortType  portType,
-            PortIndex portIndex,
-            QVariant const& value,
-            PortRole  role)
+bool SimpleGraphModel::setPortData(NodeId nodeId,
+                                   PortType portType,
+                                   PortIndex portIndex,
+                                   QVariant const& value,
+                                   PortRole role)
 {
   Q_UNUSED(nodeId);
   Q_UNUSED(portType);
@@ -278,10 +226,7 @@ setPortData(NodeId    nodeId,
   return false;
 }
 
-
-bool
-SimpleGraphModel::
-deleteConnection(ConnectionId const connectionId)
+bool SimpleGraphModel::deleteConnection(ConnectionId const connectionId)
 {
   bool disconnected = false;
 
@@ -300,14 +245,11 @@ deleteConnection(ConnectionId const connectionId)
   return disconnected;
 }
 
-
-bool
-SimpleGraphModel::
-deleteNode(NodeId const nodeId)
+bool SimpleGraphModel::deleteNode(NodeId const nodeId)
 {
   // Delete connections to this node first.
   auto connectionIds = allConnectionIds(nodeId);
-  for (auto & cId : connectionIds)
+  for (auto& cId : connectionIds)
   {
     deleteConnection(cId);
   }
@@ -320,10 +262,7 @@ deleteNode(NodeId const nodeId)
   return true;
 }
 
-
-QJsonObject
-SimpleGraphModel::
-saveNode(NodeId const nodeId) const
+QJsonObject SimpleGraphModel::saveNode(NodeId const nodeId) const
 {
   QJsonObject nodeJson;
 
@@ -341,10 +280,7 @@ saveNode(NodeId const nodeId) const
   return nodeJson;
 }
 
-
-void
-SimpleGraphModel::
-loadNode(QJsonObject const & nodeJson)
+void SimpleGraphModel::loadNode(QJsonObject const& nodeJson)
 {
   NodeId restoredNodeId = nodeJson["id"].toInt();
 
@@ -358,11 +294,8 @@ loadNode(QJsonObject const & nodeJson)
 
   {
     QJsonObject posJson = nodeJson["position"].toObject();
-    QPointF const pos(posJson["x"].toDouble(),
-                      posJson["y"].toDouble());
+    QPointF const pos(posJson["x"].toDouble(), posJson["y"].toDouble());
 
-    setNodeData(restoredNodeId,
-                NodeRole::Position,
-                pos);
+    setNodeData(restoredNodeId, NodeRole::Position, pos);
   }
 }

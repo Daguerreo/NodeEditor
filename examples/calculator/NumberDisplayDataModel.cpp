@@ -2,56 +2,40 @@
 
 #include <QtWidgets/QLabel>
 
-NumberDisplayDataModel::
-NumberDisplayDataModel()
-  : _label{nullptr}
-{
-}
+NumberDisplayDataModel::NumberDisplayDataModel() : _label{nullptr} {}
 
-
-unsigned int
-NumberDisplayDataModel::
-nPorts(PortType portType) const
+unsigned int NumberDisplayDataModel::nPorts(PortType portType) const
 {
   unsigned int result = 1;
 
   switch (portType)
   {
-    case PortType::In:
+    case PortType::In :
       result = 1;
       break;
 
-    case PortType::Out:
+    case PortType::Out :
       result = 0;
 
-    default:
+    default :
       break;
   }
 
   return result;
 }
 
-
-NodeDataType
-NumberDisplayDataModel::
-dataType(PortType, PortIndex) const
+NodeDataType NumberDisplayDataModel::dataType(PortType, PortIndex) const
 {
   return DecimalData().type();
 }
 
-
-std::shared_ptr<NodeData>
-NumberDisplayDataModel::
-outData(PortIndex)
+std::shared_ptr<NodeData> NumberDisplayDataModel::outData(PortIndex)
 {
   std::shared_ptr<NodeData> ptr;
   return ptr;
 }
 
-
-void
-NumberDisplayDataModel::
-setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
+void NumberDisplayDataModel::setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
 {
   _numberData = std::dynamic_pointer_cast<DecimalData>(data);
 
@@ -70,10 +54,7 @@ setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
   _label->adjustSize();
 }
 
-
-QWidget*
-NumberDisplayDataModel::
-embeddedWidget()
+QWidget* NumberDisplayDataModel::embeddedWidget()
 {
   if (!_label)
   {
@@ -81,13 +62,10 @@ embeddedWidget()
     _label->setMargin(3);
   }
 
-  return _label; 
+  return _label;
 }
 
-
-double 
-NumberDisplayDataModel::
-number() const
+double NumberDisplayDataModel::number() const
 {
   if (_numberData)
     return _numberData->number();

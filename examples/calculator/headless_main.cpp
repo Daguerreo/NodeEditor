@@ -8,14 +8,11 @@
 #include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/NodeDelegateModelRegistry>
 
-
-using QtNodes::NodeId;
 using QtNodes::DataFlowGraphModel;
 using QtNodes::NodeDelegateModelRegistry;
+using QtNodes::NodeId;
 
-
-static std::shared_ptr<NodeDelegateModelRegistry>
-registerDataModels()
+static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
   auto ret = std::make_shared<NodeDelegateModelRegistry>();
   ret->registerModel<NumberSourceDataModel>("Sources");
@@ -33,7 +30,6 @@ registerDataModels()
   return ret;
 }
 
-
 /**
  * This scene JSON was saved by the normal `calculator` example.
  * It has one source number node connected to both inputs of an addition node,
@@ -47,7 +43,7 @@ registerDataModels()
  *                     \  O[____________]
  */
 static QString addingNumbersScene(
-R"(
+  R"(
     {
         "nodes": [
             {
@@ -105,9 +101,7 @@ R"(
     }
 )");
 
-
-int
-main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
   std::shared_ptr<NodeDelegateModelRegistry> registry = registerDataModels();
 
@@ -126,7 +120,6 @@ main(int argc, char* argv[])
   NodeId const nodeSource = 0;
   NodeId const nodeResult = 2;
 
-
   qInfo() << "========================================";
   qInfo() << "Entering the number " << 33.3 << "to the input node";
   dataFlowGraphModel.delegateModel<NumberSourceDataModel>(nodeSource)->setNumber(33.3);
@@ -142,4 +135,3 @@ main(int argc, char* argv[])
           << dataFlowGraphModel.delegateModel<NumberDisplayDataModel>(nodeResult)->number();
   return 0;
 }
-

@@ -3,7 +3,6 @@
 #include <QtCore/QPointF>
 #include <QtGui/QTransform>
 
-
 class QGraphicsScene;
 
 namespace QtNodes
@@ -11,11 +10,8 @@ namespace QtNodes
 
 class NodeGraphicsObject;
 
+NodeGraphicsObject* locateNodeAt(QPointF scenePoint,
+                                 QGraphicsScene& scene,
+                                 QTransform const& viewTransform);
 
-NodeGraphicsObject*
-locateNodeAt(QPointF scenePoint,
-             QGraphicsScene &scene,
-             QTransform const & viewTransform);
-
-
-}
+} // namespace QtNodes

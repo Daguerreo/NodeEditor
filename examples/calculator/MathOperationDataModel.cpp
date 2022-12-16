@@ -2,9 +2,7 @@
 
 #include "DecimalData.hpp"
 
-unsigned int
-MathOperationDataModel::
-nPorts(PortType portType) const
+unsigned int MathOperationDataModel::nPorts(PortType portType) const
 {
   unsigned int result;
 
@@ -16,29 +14,19 @@ nPorts(PortType portType) const
   return result;
 }
 
-
-NodeDataType
-MathOperationDataModel::
-dataType(PortType, PortIndex) const
+NodeDataType MathOperationDataModel::dataType(PortType, PortIndex) const
 {
   return DecimalData().type();
 }
 
-
-std::shared_ptr<NodeData>
-MathOperationDataModel::
-outData(PortIndex)
+std::shared_ptr<NodeData> MathOperationDataModel::outData(PortIndex)
 {
   return std::static_pointer_cast<NodeData>(_result);
 }
 
-
-void
-MathOperationDataModel::
-setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
+void MathOperationDataModel::setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
 {
-  auto numberData =
-    std::dynamic_pointer_cast<DecimalData>(data);
+  auto numberData = std::dynamic_pointer_cast<DecimalData>(data);
 
   if (!data)
   {
@@ -56,4 +44,3 @@ setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
 
   compute();
 }
-

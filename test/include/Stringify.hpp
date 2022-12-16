@@ -9,23 +9,15 @@
 
 namespace Catch
 {
-template <>
+template<>
 struct StringMaker<QPointF>
 {
-  static std::string
-  convert(QPointF const& p)
-  {
-    return std::string(QTest::toString(p));
-  }
+  static std::string convert(QPointF const& p) { return std::string(QTest::toString(p)); }
 };
 
-template <>
+template<>
 struct StringMaker<QPoint>
 {
-  static std::string
-  convert(QPoint const& p)
-  {
-    return std::string(QTest::toString(p));
-  }
+  static std::string convert(QPoint const& p) { return std::string(QTest::toString(p)); }
 };
-}
+} // namespace Catch

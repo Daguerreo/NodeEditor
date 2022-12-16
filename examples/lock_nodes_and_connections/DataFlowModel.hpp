@@ -1,6 +1,5 @@
 #include <QtNodes/DataFlowGraphModel>
 
-
 using QtNodes::ConnectionId;
 using QtNodes::DataFlowGraphModel;
 using QtNodes::NodeDelegateModelRegistry;
@@ -12,26 +11,17 @@ class DataFlowModel : public DataFlowGraphModel
 {
 public:
   DataFlowModel(std::shared_ptr<NodeDelegateModelRegistry> registry)
-    : DataFlowGraphModel(std::move(registry))
-    , _detachPossible{true}
-    , _nodesLocked{false}
-  {}
-
-  bool detachPossible(ConnectionId const) const override
+    : DataFlowGraphModel(std::move(registry)), _detachPossible{true}, _nodesLocked{false}
   {
-    return _detachPossible;
   }
 
-  void setDetachPossible(bool d = true)
-  {
-    _detachPossible = d;
-  }
+  bool detachPossible(ConnectionId const) const override { return _detachPossible; }
 
+  void setDetachPossible(bool d = true) { _detachPossible = d; }
 
   //----
 
-  NodeFlags
-  nodeFlags(NodeId nodeId) const override
+  NodeFlags nodeFlags(NodeId nodeId) const override
   {
     auto basicFlags = DataFlowGraphModel::nodeFlags(nodeId);
 
@@ -40,7 +30,6 @@ public:
 
     return basicFlags;
   }
-
 
   void setNodesLocked(bool b = true)
   {

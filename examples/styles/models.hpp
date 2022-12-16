@@ -7,21 +7,18 @@
 
 #include <memory>
 
-using QtNodes::PortType;
-using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDelegateModel;
+using QtNodes::PortIndex;
+using QtNodes::PortType;
 
 /// The class can potentially incapsulate any user data which need to
 /// be transferred within the Node Editor graph
 class MyNodeData : public NodeData
 {
 public:
-
-  NodeDataType
-  type() const override
-  { return NodeDataType {"MyNodeData", "My Node Data"}; }
+  NodeDataType type() const override { return NodeDataType{"MyNodeData", "My Node Data"}; }
 };
 
 //------------------------------------------------------------------------------
@@ -32,29 +29,15 @@ class MyDataModel : public NodeDelegateModel
 {
   Q_OBJECT
 public:
-
   ~MyDataModel() = default;
 
 public:
+  QString caption() const override { return QString("My Data Model"); }
 
-  QString
-  caption() const override
-  {
-    return QString("My Data Model");
-  }
-
-
-  QString
-  name() const override
-  {
-    return QString("MyDataModel");
-  }
-
+  QString name() const override { return QString("MyDataModel"); }
 
 public:
-
-  QJsonObject
-  save() const override
+  QJsonObject save() const override
   {
     QJsonObject modelJson;
 
@@ -63,34 +46,17 @@ public:
     return modelJson;
   }
 
-
 public:
+  unsigned int nPorts(PortType const) const override { return 3; }
 
-  unsigned int
-  nPorts(PortType const) const override
-  {
-    return 3;
-  }
-
-
-  NodeDataType
-  dataType(PortType const, PortIndex const) const override
+  NodeDataType dataType(PortType const, PortIndex const) const override
   {
     return MyNodeData().type();
   }
 
+  std::shared_ptr<NodeData> outData(PortIndex) override { return std::make_shared<MyNodeData>(); }
 
-  std::shared_ptr<NodeData>
-  outData(PortIndex) override
-  {
-    return std::make_shared<MyNodeData>();
-  }
+  void setInData(std::shared_ptr<NodeData>, PortIndex const) override {}
 
-
-  void
-  setInData(std::shared_ptr<NodeData>, PortIndex const) override
-  {}
-
-  QWidget*
-  embeddedWidget() override { return nullptr; }
+  QWidget* embeddedWidget() override { return nullptr; }
 };

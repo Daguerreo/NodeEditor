@@ -15,7 +15,7 @@ public:
 
   NodeStyle(QString jsonText);
 
-  NodeStyle(QJsonObject const & json);
+  NodeStyle(QJsonObject const& json);
 
   virtual ~NodeStyle() = default;
 
@@ -23,7 +23,7 @@ public:
   static void setNodeStyle(QString jsonText);
 
 public:
-  void loadJson(QJsonObject const & json) override;
+  void loadJson(QJsonObject const& json) override;
 
   QJsonObject toJson() const override;
 
@@ -51,4 +51,4 @@ public:
 
   float Opacity;
 };
-}
+} // namespace QtNodes

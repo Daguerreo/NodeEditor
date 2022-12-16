@@ -1,26 +1,23 @@
-#include <QtNodes/GraphicsView>
 #include <QtNodes/DataFlowGraphicsScene>
+#include <QtNodes/GraphicsView>
 #include <QtNodes/NodeDelegateModelRegistry>
 
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QGroupBox>
-#include <QtWidgets/QHBoxLayout>
-#include <QtWidgets/QCheckBox>
 #include <QAction>
 #include <QScreen>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QGroupBox>
+#include <QtWidgets/QHBoxLayout>
 
 #include "DataFlowModel.hpp"
 #include "DelegateNodeModel.hpp"
-
 
 using QtNodes::DataFlowGraphicsScene;
 using QtNodes::GraphicsView;
 using QtNodes::NodeDelegateModelRegistry;
 using QtNodes::NodeRole;
 
-
-static std::shared_ptr<NodeDelegateModelRegistry>
-registerDataModels()
+static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
   auto ret = std::make_shared<NodeDelegateModelRegistry>();
 
@@ -29,8 +26,7 @@ registerDataModels()
   return ret;
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
 
@@ -51,21 +47,19 @@ main(int argc, char *argv[])
 
   QWidget window;
 
-  QHBoxLayout * l = new QHBoxLayout(&window);
+  QHBoxLayout* l = new QHBoxLayout(&window);
 
   GraphicsView view(scene);
 
   l->addWidget(&view);
 
+  QGroupBox* groupBox = new QGroupBox("Options");
 
-
-  QGroupBox *groupBox = new QGroupBox("Options");
-
-  QCheckBox *cb1 = new QCheckBox("Nodes are locked");
-  QCheckBox *cb2 = new QCheckBox("Connections detachable");
+  QCheckBox* cb1 = new QCheckBox("Nodes are locked");
+  QCheckBox* cb2 = new QCheckBox("Connections detachable");
   cb2->setChecked(true);
 
-  QVBoxLayout * vbl = new QVBoxLayout;
+  QVBoxLayout* vbl = new QVBoxLayout;
   vbl->addWidget(cb1);
   vbl->addWidget(cb2);
   vbl->addStretch();
@@ -73,20 +67,14 @@ main(int argc, char *argv[])
 
   QObject::connect(cb1,
                    &QCheckBox::stateChanged,
-                   [&graphModel](int state)
-                   {
-                     graphModel.setNodesLocked(state == Qt::Checked);
-                   });
+                   [&graphModel](int state) { graphModel.setNodesLocked(state == Qt::Checked); });
 
   QObject::connect(cb2,
                    &QCheckBox::stateChanged,
                    [&graphModel](int state)
-                   {
-                     graphModel.setDetachPossible(state == Qt::Checked);
-                   });
+                   { graphModel.setDetachPossible(state == Qt::Checked); });
 
   l->addWidget(groupBox);
-
 
   window.setWindowTitle("Locked Nodes and Connections");
   window.resize(800, 600);
@@ -97,4 +85,3 @@ main(int argc, char *argv[])
 
   return app.exec();
 }
-

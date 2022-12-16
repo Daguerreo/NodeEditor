@@ -14,24 +14,15 @@
 class MultiplicationModel : public MathOperationDataModel
 {
 public:
-
-  virtual
-  ~MultiplicationModel() {}
+  virtual ~MultiplicationModel() {}
 
 public:
+  QString caption() const override { return QStringLiteral("Multiplication"); }
 
-  QString
-  caption() const override
-  { return QStringLiteral("Multiplication"); }
-
-  QString
-  name() const override
-  { return QStringLiteral("Multiplication"); }
+  QString name() const override { return QStringLiteral("Multiplication"); }
 
 private:
-
-  void
-  compute() override
+  void compute() override
   {
     PortIndex const outPortIndex = 0;
 
@@ -40,20 +31,17 @@ private:
 
     if (n1 && n2)
     {
-      //modelValidationState = NodeValidationState::Valid;
-      //modelValidationError = QString();
-      _result = std::make_shared<DecimalData>(n1->number() *
-                                              n2->number());
+      // modelValidationState = NodeValidationState::Valid;
+      // modelValidationError = QString();
+      _result = std::make_shared<DecimalData>(n1->number() * n2->number());
     }
     else
     {
-      //modelValidationState = NodeValidationState::Warning;
-      //modelValidationError = QStringLiteral("Missing or incorrect inputs");
+      // modelValidationState = NodeValidationState::Warning;
+      // modelValidationError = QStringLiteral("Missing or incorrect inputs");
       _result.reset();
     }
 
     Q_EMIT dataUpdated(outPortIndex);
   }
-
-
 };

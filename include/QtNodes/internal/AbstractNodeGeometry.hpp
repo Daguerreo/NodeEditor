@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Export.hpp"
 #include "Definitions.hpp"
+#include "Export.hpp"
 
 #include <QRectF>
 #include <QSize>
@@ -15,7 +15,8 @@ class AbstractGraphModel;
 class NODE_EDITOR_PUBLIC AbstractNodeGeometry
 {
 public:
-  AbstractNodeGeometry(AbstractGraphModel &);
+  AbstractNodeGeometry(AbstractGraphModel&);
+
   virtual ~AbstractNodeGeometry() {}
 
   /**
@@ -38,58 +39,41 @@ public:
   virtual void recomputeSize(NodeId const nodeId) const = 0;
 
   /// Port position in node's coordinate system.
-  virtual
-  QPointF
-  portPosition(NodeId const    nodeId,
-               PortType const  portType,
-               PortIndex const index) const = 0;
+  virtual QPointF portPosition(NodeId const nodeId,
+                               PortType const portType,
+                               PortIndex const index) const = 0;
 
   /// A convenience function using the `portPosition` and a given transformation.
-  virtual
-  QPointF
-  portScenePosition(NodeId const       nodeId,
-                    PortType const     portType,
-                    PortIndex const    index,
-                    QTransform const & t) const;
+  virtual QPointF portScenePosition(NodeId const nodeId,
+                                    PortType const portType,
+                                    PortIndex const index,
+                                    QTransform const& t) const;
 
   /// Defines where to draw port label. The point corresponds to a font baseline.
-  virtual
-  QPointF
-  portTextPosition(NodeId const   nodeId,
-                   PortType const portType,
-                   PortIndex const portIndex) const = 0;
+  virtual QPointF portTextPosition(NodeId const nodeId,
+                                   PortType const portType,
+                                   PortIndex const portIndex) const = 0;
 
   /**
    * Defines where to start drawing the caption. The point corresponds to a font
    * baseline.
    */
-  virtual
-  QPointF
-  captionPosition(NodeId const nodeId) const = 0;
-
+  virtual QPointF captionPosition(NodeId const nodeId) const = 0;
 
   /// Caption rect is needed for estimating the total node size.
-  virtual
-  QRectF
-  captionRect(NodeId const nodeId) const = 0;
+  virtual QRectF captionRect(NodeId const nodeId) const = 0;
 
   /// Position for an embedded widget. Return any value if you don't embed.
-  virtual
-  QPointF
-  widgetPosition(NodeId const nodeId) const = 0;
+  virtual QPointF widgetPosition(NodeId const nodeId) const = 0;
 
-  virtual
-  PortIndex
-  checkPortHit(NodeId const   nodeId,
-               PortType const portType,
-               QPointF const  nodePoint) const;
+  virtual PortIndex checkPortHit(NodeId const nodeId,
+                                 PortType const portType,
+                                 QPointF const nodePoint) const;
 
-  virtual
-  QRect
-  resizeHandleRect(NodeId const nodeId) const = 0;
+  virtual QRect resizeHandleRect(NodeId const nodeId) const = 0;
 
 protected:
-  AbstractGraphModel & _graphModel;
+  AbstractGraphModel& _graphModel;
 };
 
-}
+} // namespace QtNodes

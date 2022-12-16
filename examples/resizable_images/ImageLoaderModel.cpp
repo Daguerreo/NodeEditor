@@ -1,13 +1,11 @@
 #include "ImageLoaderModel.hpp"
 
-#include <QtCore/QEvent>
 #include <QtCore/QDir>
+#include <QtCore/QEvent>
 
 #include <QtWidgets/QFileDialog>
 
-ImageLoaderModel::
-ImageLoaderModel()
-  : _label(new QLabel("Double click to load image"))
+ImageLoaderModel::ImageLoaderModel() : _label(new QLabel("Double click to load image"))
 {
   _label->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
 
@@ -22,33 +20,27 @@ ImageLoaderModel()
   _label->installEventFilter(this);
 }
 
-
-unsigned int
-ImageLoaderModel::
-nPorts(PortType portType) const
+unsigned int ImageLoaderModel::nPorts(PortType portType) const
 {
   unsigned int result = 1;
 
   switch (portType)
   {
-    case PortType::In:
+    case PortType::In :
       result = 0;
       break;
 
-    case PortType::Out:
+    case PortType::Out :
       result = 1;
 
-    default:
+    default :
       break;
   }
 
   return result;
 }
 
-
-bool
-ImageLoaderModel::
-eventFilter(QObject *object, QEvent *event)
+bool ImageLoaderModel::eventFilter(QObject* object, QEvent* event)
 {
   if (object == _label)
   {
@@ -57,12 +49,10 @@ eventFilter(QObject *object, QEvent *event)
 
     if (event->type() == QEvent::MouseButtonPress)
     {
-
-      QString fileName =
-        QFileDialog::getOpenFileName(nullptr,
-                                     tr("Open Image"),
-                                     QDir::homePath(),
-                                     tr("Image Files (*.png *.jpg *.bmp)"));
+      QString fileName = QFileDialog::getOpenFileName(nullptr,
+                                                      tr("Open Image"),
+                                                      QDir::homePath(),
+                                                      tr("Image Files (*.png *.jpg *.bmp)"));
 
       _pixmap = QPixmap(fileName);
 
@@ -82,18 +72,12 @@ eventFilter(QObject *object, QEvent *event)
   return false;
 }
 
-
-NodeDataType
-ImageLoaderModel::
-dataType(PortType const, PortIndex const) const
+NodeDataType ImageLoaderModel::dataType(PortType const, PortIndex const) const
 {
   return PixmapData().type();
 }
 
-
-std::shared_ptr<NodeData>
-ImageLoaderModel::
-outData(PortIndex)
+std::shared_ptr<NodeData> ImageLoaderModel::outData(PortIndex)
 {
   return std::make_shared<PixmapData>(_pixmap);
 }

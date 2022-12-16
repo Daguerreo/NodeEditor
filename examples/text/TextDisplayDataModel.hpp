@@ -25,45 +25,29 @@ class TextDisplayDataModel : public NodeDelegateModel
 public:
   TextDisplayDataModel();
 
-  virtual
-  ~TextDisplayDataModel() {}
+  virtual ~TextDisplayDataModel() {}
 
 public:
+  QString caption() const override { return QString("Text Display"); }
 
-  QString
-  caption() const override
-  { return QString("Text Display"); }
+  bool captionVisible() const override { return false; }
 
-  bool
-  captionVisible() const override { return false; }
+  static QString Name() { return QString("TextDisplayDataModel"); }
 
-  static QString
-  Name()
-  { return QString("TextDisplayDataModel"); }
-
-  QString
-  name() const override
-  { return TextDisplayDataModel::Name(); }
+  QString name() const override { return TextDisplayDataModel::Name(); }
 
 public:
+  unsigned int nPorts(PortType portType) const override;
 
-  unsigned int
-  nPorts(PortType portType) const override;
+  NodeDataType dataType(PortType portType, PortIndex portIndex) const override;
 
-  NodeDataType
-  dataType(PortType portType, PortIndex portIndex) const override;
+  std::shared_ptr<NodeData> outData(PortIndex const port) override;
 
-  std::shared_ptr<NodeData>
-  outData(PortIndex const port) override;
+  void setInData(std::shared_ptr<NodeData> data, PortIndex const portIndex) override;
 
-  void
-  setInData(std::shared_ptr<NodeData> data, 
-            PortIndex const portIndex) override;
-
-  QWidget*
-  embeddedWidget() override { return _label; }
+  QWidget* embeddedWidget() override { return _label; }
 
 private:
-  QLabel * _label;
+  QLabel* _label;
   QString _inputText;
 };

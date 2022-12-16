@@ -8,26 +8,25 @@
 
 #include <QtWidgets/QGraphicsScene>
 
-#include <QtGui/QPen>
 #include <QtGui/QBrush>
+#include <QtGui/QPen>
 
 #include <QtWidgets/QMenu>
 
-#include <QtCore/QRectF>
-#include <QtCore/QPointF>
 #include <QtCore/QDebug>
+#include <QtCore/QPointF>
+#include <QtCore/QRectF>
 
 #include <QtOpenGL>
 #include <QtWidgets>
 
-#include <iostream>
 #include <cmath>
+#include <iostream>
 
-using QtNodes::GraphicsView;
 using QtNodes::BasicGraphicsScene;
+using QtNodes::GraphicsView;
 
-GraphicsView::
-GraphicsView(QWidget* parent)
+GraphicsView::GraphicsView(QWidget* parent)
   : QGraphicsView(parent)
   , _clearSelectionAction(Q_NULLPTR)
   , _deleteSelectionAction(Q_NULLPTR)
@@ -36,7 +35,7 @@ GraphicsView(QWidget* parent)
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
 
-  auto const & flowViewStyle = StyleCollection::flowViewStyle();
+  auto const& flowViewStyle = StyleCollection::flowViewStyle();
 
   setBackgroundBrush(flowViewStyle.BackgroundColor);
 
@@ -56,34 +55,16 @@ GraphicsView(QWidget* parent)
   setSceneRect(-maxSize, -maxSize, (maxSize * 2), (maxSize * 2));
 }
 
-
-GraphicsView::
-GraphicsView(BasicGraphicsScene* scene, QWidget* parent)
-  : GraphicsView(parent)
+GraphicsView::GraphicsView(BasicGraphicsScene* scene, QWidget* parent) : GraphicsView(parent)
 {
   setScene(scene);
 }
 
+QAction* GraphicsView::clearSelectionAction() const { return _clearSelectionAction; }
 
-QAction*
-GraphicsView::
-clearSelectionAction() const
-{
-  return _clearSelectionAction;
-}
+QAction* GraphicsView::deleteSelectionAction() const { return _deleteSelectionAction; }
 
-
-QAction*
-GraphicsView::
-deleteSelectionAction() const
-{
-  return _deleteSelectionAction;
-}
-
-
-void
-GraphicsView::
-setScene(BasicGraphicsScene* scene)
+void GraphicsView::setScene(BasicGraphicsScene* scene)
 {
   QGraphicsView::setScene(scene);
 
@@ -93,14 +74,10 @@ setScene(BasicGraphicsScene* scene)
     _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"), this);
     _clearSelectionAction->setShortcut(Qt::Key_Escape);
 
-    connect(_clearSelectionAction,
-            &QAction::triggered,
-            scene,
-            &QGraphicsScene::clearSelection);
+    connect(_clearSelectionAction, &QAction::triggered, scene, &QGraphicsScene::clearSelection);
 
     addAction(_clearSelectionAction);
   }
-
 
   {
     delete _deleteSelectionAction;
@@ -128,7 +105,6 @@ setScene(BasicGraphicsScene* scene)
     addAction(_duplicateSelectionAction);
   }
 
-
   auto undoAction = scene->undoStack().createUndoAction(this, tr("&Undo"));
   undoAction->setShortcuts(QKeySequence::Undo);
   addAction(undoAction);
@@ -138,10 +114,7 @@ setScene(BasicGraphicsScene* scene)
   addAction(redoAction);
 }
 
-
-void
-GraphicsView::
-centerScene()
+void GraphicsView::centerScene()
 {
   if (scene())
   {
@@ -149,8 +122,7 @@ centerScene()
 
     QRectF sceneRect = scene()->sceneRect();
 
-    if (sceneRect.width() > this->rect().width() ||
-        sceneRect.height() > this->rect().height())
+    if (sceneRect.width() > this->rect().width() || sceneRect.height() > this->rect().height())
     {
       fitInView(sceneRect, Qt::KeepAspectRatio);
     }
@@ -159,10 +131,7 @@ centerScene()
   }
 }
 
-
-void
-GraphicsView::
-contextMenuEvent(QContextMenuEvent* event)
+void GraphicsView::contextMenuEvent(QContextMenuEvent* event)
 {
   if (itemAt(event->pos()))
   {
@@ -180,10 +149,7 @@ contextMenuEvent(QContextMenuEvent* event)
   }
 }
 
-
-void
-GraphicsView::
-wheelEvent(QWheelEvent* event)
+void GraphicsView::wheelEvent(QWheelEvent* event)
 {
   QPoint delta = event->angleDelta();
 
@@ -201,42 +167,25 @@ wheelEvent(QWheelEvent* event)
     scaleDown();
 }
 
+double GraphicsView::getScale() const { return transform().m11(); }
 
-double
-GraphicsView::
-getScale() const
+void GraphicsView::setScaleRange(double minimum, double maximum)
 {
-  return transform().m11();
-}
-
-
-void
-GraphicsView::
-setScaleRange(double minimum, double maximum)
-{
-  if (maximum < minimum) std::swap(minimum, maximum);
+  if (maximum < minimum)
+    std::swap(minimum, maximum);
   minimum = std::max(0.0, minimum);
   maximum = std::max(0.0, maximum);
 
-  _scaleRange = { minimum, maximum };
+  _scaleRange = {minimum, maximum};
 
   setupScale(transform().m11());
 }
 
+void GraphicsView::setScaleRange(ScaleRange range) { setScaleRange(range.minimum, range.maximum); }
 
-void
-GraphicsView::
-setScaleRange(ScaleRange range)
+void GraphicsView::scaleUp()
 {
-  setScaleRange(range.minimum, range.maximum);
-}
-
-
-void
-GraphicsView::
-scaleUp()
-{
-  double const step   = 1.2;
+  double const step = 1.2;
   double const factor = std::pow(step, 1.0);
 
   if (_scaleRange.maximum > 0)
@@ -254,12 +203,9 @@ scaleUp()
   Q_EMIT scaleChanged(transform().m11());
 }
 
-
-void
-GraphicsView::
-scaleDown()
+void GraphicsView::scaleDown()
 {
-  double const step   = 1.2;
+  double const step = 1.2;
   double const factor = std::pow(step, -1.0);
 
   if (_scaleRange.minimum > 0)
@@ -277,10 +223,7 @@ scaleDown()
   Q_EMIT scaleChanged(transform().m11());
 }
 
-
-void
-GraphicsView::
-setupScale(double scale)
+void GraphicsView::setupScale(double scale)
 {
   scale = std::max(_scaleRange.minimum, std::min(_scaleRange.maximum, scale));
 
@@ -297,18 +240,12 @@ setupScale(double scale)
   Q_EMIT scaleChanged(scale);
 }
 
-
-void
-GraphicsView::
-onDeleteSelectedObjects()
+void GraphicsView::onDeleteSelectedObjects()
 {
   nodeScene()->undoStack().push(new DeleteCommand(nodeScene()));
 }
 
-
-void
-GraphicsView::
-onDuplicateSelectedObjects()
+void GraphicsView::onDuplicateSelectedObjects()
 {
   QPoint origin = mapFromGlobal(QCursor::pos());
 
@@ -321,45 +258,36 @@ onDuplicateSelectedObjects()
   nodeScene()->undoStack().push(new DuplicateCommand(nodeScene(), relativeOrigin));
 }
 
-
-void
-GraphicsView::
-keyPressEvent(QKeyEvent* event)
+void GraphicsView::keyPressEvent(QKeyEvent* event)
 {
   switch (event->key())
   {
-    case Qt::Key_Shift:
+    case Qt::Key_Shift :
       setDragMode(QGraphicsView::RubberBandDrag);
       break;
 
-    default:
+    default :
       break;
   }
 
   QGraphicsView::keyPressEvent(event);
 }
 
-
-void
-GraphicsView::
-keyReleaseEvent(QKeyEvent* event)
+void GraphicsView::keyReleaseEvent(QKeyEvent* event)
 {
   switch (event->key())
   {
-    case Qt::Key_Shift:
+    case Qt::Key_Shift :
       setDragMode(QGraphicsView::ScrollHandDrag);
       break;
 
-    default:
+    default :
       break;
   }
   QGraphicsView::keyReleaseEvent(event);
 }
 
-
-void
-GraphicsView::
-mousePressEvent(QMouseEvent* event)
+void GraphicsView::mousePressEvent(QMouseEvent* event)
 {
   QGraphicsView::mousePressEvent(event);
   if (event->button() == Qt::LeftButton)
@@ -368,10 +296,7 @@ mousePressEvent(QMouseEvent* event)
   }
 }
 
-
-void
-GraphicsView::
-mouseMoveEvent(QMouseEvent* event)
+void GraphicsView::mouseMoveEvent(QMouseEvent* event)
 {
   QGraphicsView::mouseMoveEvent(event);
   if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton)
@@ -385,44 +310,38 @@ mouseMoveEvent(QMouseEvent* event)
   }
 }
 
-
-void
-GraphicsView::
-drawBackground(QPainter* painter, const QRectF & r)
+void GraphicsView::drawBackground(QPainter* painter, const QRectF& r)
 {
   QGraphicsView::drawBackground(painter, r);
 
-  auto drawGrid =
-    [&](double gridStep)
+  auto drawGrid = [&](double gridStep)
+  {
+    QRect windowRect = rect();
+    QPointF tl = mapToScene(windowRect.topLeft());
+    QPointF br = mapToScene(windowRect.bottomRight());
+
+    double left = std::floor(tl.x() / gridStep - 0.5);
+    double right = std::floor(br.x() / gridStep + 1.0);
+    double bottom = std::floor(tl.y() / gridStep - 0.5);
+    double top = std::floor(br.y() / gridStep + 1.0);
+
+    // vertical lines
+    for (int xi = int(left); xi <= int(right); ++xi)
     {
-      QRect windowRect = rect();
-      QPointF tl       = mapToScene(windowRect.topLeft());
-      QPointF br       = mapToScene(windowRect.bottomRight());
+      QLineF line(xi * gridStep, bottom * gridStep, xi * gridStep, top * gridStep);
 
-      double left   = std::floor(tl.x() / gridStep - 0.5);
-      double right  = std::floor(br.x() / gridStep + 1.0);
-      double bottom = std::floor(tl.y() / gridStep - 0.5);
-      double top    = std::floor(br.y() / gridStep + 1.0);
+      painter->drawLine(line);
+    }
 
-      // vertical lines
-      for (int xi = int(left); xi <= int(right); ++xi)
-      {
-        QLineF line(xi * gridStep, bottom * gridStep,
-                    xi * gridStep, top * gridStep);
+    // horizontal lines
+    for (int yi = int(bottom); yi <= int(top); ++yi)
+    {
+      QLineF line(left * gridStep, yi * gridStep, right * gridStep, yi * gridStep);
+      painter->drawLine(line);
+    }
+  };
 
-        painter->drawLine(line);
-      }
-
-      // horizontal lines
-      for (int yi = int(bottom); yi <= int(top); ++yi)
-      {
-        QLineF line(left * gridStep, yi * gridStep,
-                    right * gridStep, yi * gridStep);
-        painter->drawLine(line);
-      }
-    };
-
-  auto const & flowViewStyle = StyleCollection::flowViewStyle();
+  auto const& flowViewStyle = StyleCollection::flowViewStyle();
 
   QPen pfine(flowViewStyle.FineGridColor, 1.0);
 
@@ -435,21 +354,11 @@ drawBackground(QPainter* painter, const QRectF & r)
   drawGrid(150);
 }
 
-
-void
-GraphicsView::
-showEvent(QShowEvent* event)
+void GraphicsView::showEvent(QShowEvent* event)
 {
   QGraphicsView::showEvent(event);
 
   centerScene();
 }
 
-
-BasicGraphicsScene*
-GraphicsView::
-nodeScene()
-{
-  return dynamic_cast<BasicGraphicsScene*>(scene());
-}
-
+BasicGraphicsScene* GraphicsView::nodeScene() { return dynamic_cast<BasicGraphicsScene*>(scene()); }

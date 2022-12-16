@@ -10,17 +10,12 @@
 namespace QtNodes
 {
 
-AbstractNodeGeometry::
-AbstractNodeGeometry(AbstractGraphModel & graphModel)
-  : _graphModel(graphModel)
+AbstractNodeGeometry::AbstractNodeGeometry(AbstractGraphModel& graphModel) : _graphModel(graphModel)
 {
   //
 }
 
-
-QRectF
-AbstractNodeGeometry::
-boundingRect(NodeId const nodeId) const
+QRectF AbstractNodeGeometry::boundingRect(NodeId const nodeId) const
 {
   QSize s = size(nodeId);
 
@@ -36,27 +31,21 @@ boundingRect(NodeId const nodeId) const
   return r.marginsAdded(margins);
 }
 
-
-QPointF
-AbstractNodeGeometry::
-portScenePosition(NodeId const nodeId,
-                  PortType const portType,
-                  PortIndex const index,
-                  QTransform const & t) const
+QPointF AbstractNodeGeometry::portScenePosition(NodeId const nodeId,
+                                                PortType const portType,
+                                                PortIndex const index,
+                                                QTransform const& t) const
 {
   QPointF result = portPosition(nodeId, portType, index);
 
   return t.map(result);
 }
 
-
-PortIndex
-AbstractNodeGeometry::
-checkPortHit(NodeId const nodeId,
-             PortType const portType,
-             QPointF const nodePoint) const
+PortIndex AbstractNodeGeometry::checkPortHit(NodeId const nodeId,
+                                             PortType const portType,
+                                             QPointF const nodePoint) const
 {
-  auto const & nodeStyle = StyleCollection::nodeStyle();
+  auto const& nodeStyle = StyleCollection::nodeStyle();
 
   PortIndex result = InvalidPortIndex;
 
@@ -65,11 +54,10 @@ checkPortHit(NodeId const nodeId,
 
   double const tolerance = 2.0 * nodeStyle.ConnectionPointDiameter;
 
-  size_t const n =
-    _graphModel.nodeData<unsigned int>(nodeId,
-                                       (portType == PortType::Out) ?
-                                       NodeRole::OutPortCount :
-                                       NodeRole::InPortCount);
+  size_t const n = _graphModel.nodeData<unsigned int>(nodeId,
+                                                      (portType == PortType::Out)
+                                                        ? NodeRole::OutPortCount
+                                                        : NodeRole::InPortCount);
 
   for (unsigned int portIndex = 0; portIndex < n; ++portIndex)
   {
@@ -88,5 +76,4 @@ checkPortHit(NodeId const nodeId,
   return result;
 }
 
-
-}
+} // namespace QtNodes

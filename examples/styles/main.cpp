@@ -3,24 +3,23 @@
 #include <QtNodes/ConnectionStyle>
 #include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/DataFlowGraphicsScene>
-#include <QtNodes/NodeDelegateModelRegistry>
 #include <QtNodes/GraphicsView>
 #include <QtNodes/GraphicsViewStyle>
 #include <QtNodes/NodeData>
+#include <QtNodes/NodeDelegateModelRegistry>
 #include <QtNodes/NodeStyle>
 
 #include <QtWidgets/QApplication>
 
 using QtNodes::ConnectionStyle;
-using QtNodes::DataFlowGraphModel;
 using QtNodes::DataFlowGraphicsScene;
-using QtNodes::NodeDelegateModelRegistry;
+using QtNodes::DataFlowGraphModel;
 using QtNodes::GraphicsView;
 using QtNodes::GraphicsViewStyle;
+using QtNodes::NodeDelegateModelRegistry;
 using QtNodes::NodeStyle;
 
-static std::shared_ptr<NodeDelegateModelRegistry>
-registerDataModels()
+static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
   auto ret = std::make_shared<NodeDelegateModelRegistry>();
 
@@ -29,10 +28,7 @@ registerDataModels()
   return ret;
 }
 
-
-static
-void
-setStyle()
+static void setStyle()
 {
   GraphicsViewStyle::setStyle(
     R"(
@@ -87,9 +83,7 @@ setStyle()
   )");
 }
 
-
-int
-main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
 
@@ -108,4 +102,3 @@ main(int argc, char* argv[])
 
   return app.exec();
 }
-

@@ -3,31 +3,30 @@
 #include "Definitions.hpp"
 
 #include <QUndoCommand>
-#include <QtCore/QPointF>
 #include <QtCore/QJsonObject>
+#include <QtCore/QPointF>
 
 namespace QtNodes
 {
 
 class BasicGraphicsScene;
 
-
 /**
  * Selected scene objects are serialized and then removed from the scene.
  * The deleted elements could be restored in `undo`.
  */
-class DeleteCommand : public QUndoCommand 
+class DeleteCommand : public QUndoCommand
 {
 public:
   DeleteCommand(BasicGraphicsScene* scene);
 
   void undo() override;
   void redo() override;
+
 private:
   BasicGraphicsScene* _scene;
   QJsonObject _sceneJson;
 };
-
 
 /**
  * A command used in `GraphicsView` when user duplicates the selected objects by
@@ -36,8 +35,7 @@ private:
 class DuplicateCommand : public QUndoCommand
 {
 public:
-  DuplicateCommand(BasicGraphicsScene* scene,
-                   QPointF const & mouseScenePos);
+  DuplicateCommand(BasicGraphicsScene* scene, QPointF const& mouseScenePos);
 
   /**
    * Uses the stored `_newSceneJson` variable with the serialized duplicates to
@@ -54,19 +52,18 @@ public:
    * to be able to undo the duplication.
    */
   void redo() override;
+
 private:
   BasicGraphicsScene* _scene;
-  QPointF const & _mouseScenePos;
+  QPointF const& _mouseScenePos;
   QJsonObject _sceneJson;
   QJsonObject _newSceneJson;
 };
 
-
 class DisconnectCommand : public QUndoCommand
 {
 public:
-  DisconnectCommand(BasicGraphicsScene* scene,
-                    ConnectionId const);
+  DisconnectCommand(BasicGraphicsScene* scene, ConnectionId const);
 
   void undo() override;
   void redo() override;
@@ -76,13 +73,11 @@ private:
 
   ConnectionId _connId;
 };
-
 
 class ConnectCommand : public QUndoCommand
 {
 public:
-  ConnectCommand(BasicGraphicsScene* scene,
-                 ConnectionId const);
+  ConnectCommand(BasicGraphicsScene* scene, ConnectionId const);
 
   void undo() override;
   void redo() override;
@@ -93,13 +88,10 @@ private:
   ConnectionId _connId;
 };
 
-
 class MoveNodeCommand : public QUndoCommand
 {
 public:
-  MoveNodeCommand(BasicGraphicsScene* scene,
-                  NodeId const nodeId,
-                  QPointF const &diff);
+  MoveNodeCommand(BasicGraphicsScene* scene, NodeId const nodeId, QPointF const& diff);
 
   void undo() override;
   void redo() override;
@@ -113,7 +105,7 @@ public:
   /**
    * Several sequential movements could be merged into one command.
    */
-  bool mergeWith(QUndoCommand const *c) override;
+  bool mergeWith(QUndoCommand const* c) override;
 
 private:
   BasicGraphicsScene* _scene;
@@ -121,5 +113,4 @@ private:
   QPointF _diff;
 };
 
-
-}
+} // namespace QtNodes

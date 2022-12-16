@@ -14,30 +14,23 @@
 class SubtractionModel : public MathOperationDataModel
 {
 public:
-
-  virtual
-  ~SubtractionModel() {}
+  virtual ~SubtractionModel() {}
 
 public:
+  QString caption() const override { return QStringLiteral("Subtraction"); }
 
-  QString
-  caption() const override
-  { return QStringLiteral("Subtraction"); }
-
-  virtual bool
-  portCaptionVisible(PortType portType, PortIndex portIndex) const override
+  virtual bool portCaptionVisible(PortType portType, PortIndex portIndex) const override
   {
-    Q_UNUSED(portType); Q_UNUSED(portIndex);
+    Q_UNUSED(portType);
+    Q_UNUSED(portIndex);
     return true;
   }
 
-
-  virtual QString
-  portCaption(PortType portType, PortIndex portIndex) const override
+  virtual QString portCaption(PortType portType, PortIndex portIndex) const override
   {
     switch (portType)
     {
-      case PortType::In:
+      case PortType::In :
         if (portIndex == 0)
           return QStringLiteral("Minuend");
         else if (portIndex == 1)
@@ -45,24 +38,19 @@ public:
 
         break;
 
-      case PortType::Out:
+      case PortType::Out :
         return QStringLiteral("Result");
 
-      default:
+      default :
         break;
     }
     return QString();
   }
 
-
-  QString
-  name() const override
-  { return QStringLiteral("Subtraction"); }
+  QString name() const override { return QStringLiteral("Subtraction"); }
 
 private:
-
-  void
-  compute() override
+  void compute() override
   {
     PortIndex const outPortIndex = 0;
 
@@ -71,8 +59,7 @@ private:
 
     if (n1 && n2)
     {
-      _result = std::make_shared<DecimalData>(n1->number() -
-                                              n2->number());
+      _result = std::make_shared<DecimalData>(n1->number() - n2->number());
     }
     else
     {
@@ -81,6 +68,4 @@ private:
 
     Q_EMIT dataUpdated(outPortIndex);
   }
-
-
 };
